@@ -1,10 +1,10 @@
-package com.dietngrocery.dietngrocery;
+package com.dietcart.dietcart;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class DietngroceryApplicationTests {
+class DietcartApplicationTests {
 
 	@Test
 	void contextLoads() {
