@@ -6,6 +6,7 @@ import Groceries from './pages/Groceries';
 import Checkout from './pages/Checkout';
 import Confirmation from './pages/Confirmation';
 import Navbar from './components/Navbar';
+import Shop from './pages/Shop';
 
 export default function App() {
   return (

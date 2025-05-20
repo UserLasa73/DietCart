@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-interface Product {
+interface Products {
   id: number;
   name: string;
   description: string;
@@ -8,7 +8,7 @@ interface Product {
 }
 
 const Shop = () => {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Products[]>([]);
 
   useEffect(() => {
     fetch("http://localhost:8080/api/products")
@@ -18,7 +18,7 @@ const Shop = () => {
 
   return (
     <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4">Product List</h2>
+      <h2 className="text-2xl font-bold mb-4">Products List</h2>
       <ul className="space-y-4">
         {products.map((product) => (
           <li key={product.id} className="border p-4 rounded-lg shadow">
