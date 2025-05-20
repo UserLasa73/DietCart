@@ -1,5 +1,6 @@
 import { NavLink, Link } from 'react-router-dom';
 import { ShoppingCartIcon } from '@heroicons/react/24/outline';
+import { HeartIcon  } from '@heroicons/react/24/outline';
 
 export default function Navbar() {
   const cartItemCount = 0; // Replace with real state later
@@ -11,7 +12,7 @@ export default function Navbar() {
           DietCart
         </Link>
         
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-10">
           <NavLink 
             to="/" 
             className={({ isActive }) => 
@@ -20,6 +21,41 @@ export default function Navbar() {
           >
             Home
           </NavLink>
+
+          <NavLink 
+            to="/Shop" 
+            className={({ isActive }) => 
+              isActive ? "text-green-600" : "text-gray-600 hover:text-green-600"
+            }
+          >
+            Shop
+          </NavLink>
+
+          <NavLink 
+            to="/About" 
+            className={({ isActive }) => 
+              isActive ? "text-green-600" : "text-gray-600 hover:text-green-600"
+            }
+          >
+            About
+          </NavLink>
+
+          <NavLink 
+            to="/Profile" 
+            className={({ isActive }) => 
+              isActive ? "text-green-600" : "text-gray-600 hover:text-green-600"
+            }
+          >
+            Login
+          </NavLink>
+
+          <Link 
+            to="/Wishlist" 
+            className="relative"
+            aria-label="Wishlist"
+          >
+            <HeartIcon className="h-6 w-6 text-gray-600 hover:text-green-600" />
+          </Link>
 
           <Link 
             to="/checkout" 

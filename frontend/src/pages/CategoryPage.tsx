@@ -16,6 +16,7 @@ export default function CategoryPage() {
           <h3 className="text-xl font-medium text-green-700 mb-2">Meal Plans</h3>
           <p className="text-gray-600">Pre-designed meal plans tailored to your needs</p>
         </Link>
+        
         <Link 
           to={`/groceries/${dietType}`} 
           className="flex-1 p-6 border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow"
@@ -23,6 +24,7 @@ export default function CategoryPage() {
           <h3 className="text-xl font-medium text-green-700 mb-2">Groceries</h3>
           <p className="text-gray-600">Shop individual items that fit your diet</p>
         </Link>
+        
       </div>
     </div>
   );
