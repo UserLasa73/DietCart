@@ -1,5 +1,8 @@
 import DietTypeSelector from '../components/DietTypeSelector';
+import FeaturedProducts from '../components/FeaturedProducts';
 import HeroSection from '../components/HeroSection';
+import TestimonialSection from '../components/TestimonialSection';
+import WhyChooseUs from '../components/WhyChooseUs';
 
 export default function Home() {
   
@@ -9,6 +12,9 @@ export default function Home() {
     <HeroSection />
     <div className="flex flex-col justify-center p-10 bg-gray-50">
       <DietTypeSelector />
+      <FeaturedProducts />
+      <TestimonialSection />
+      <WhyChooseUs />
     </div>
     </>
   );
