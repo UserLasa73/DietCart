@@ -1,101 +1,45 @@
-import { DietType } from '../types/types';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import {useRef} from 'react';
+import React from "react";
 
-const dietTypes: DietType[] = [
-  'Diabetic-Friendly', 'Nut-Free', 'Dairy-Free', 'Gluten-Free', 
-  'Soy-Free', 'Egg-Free', 'Heart-Healthy', 'Weight Management',
-  'Gut Health', 'Kidney-Friendly', 'Liver Support', 'Hypertension-Safe',
-  'PCOS/PCOD Support', 'Senior Nutrition', 'Children\'s Nutrition',
-  'Immune Boosters', 'Thyroid-Supportive', 'Pregnancy & Postpartum',
-  'Vegan Medical Diets'
+const DietTypeSelector = () => {
+  const categories = [
+  { name: "Diabetic-Friendly", icon: "🩸" },        // Blood drop
+  { name: "Nut-Free", icon: "🥜🚫" },               // No peanuts
+  { name: "Dairy-Free", icon: "🥛❌" },              // No milk
+  { name: "Gluten-Free", icon: "🌾🚫" },            // No wheat
+  { name: "Soy-Free", icon: "🌱🚫" },               // No soy
+  { name: "Egg-Free", icon: "🥚❌" },               // No eggs
+  { name: "Heart-Healthy", icon: "❤️" },           // Heart
+  { name: "Weight Management", icon: "⚖️" },       // Scale
+  { name: "Gut Health", icon: "🦠" },              // Microbes
+  { name: "Kidney-Friendly", icon: "🫘" },         // Kidney bean (closest representation)
+  { name: "Liver Support", icon: "🍵" },           // Herbal/green tea for detox
+  { name: "Hypertension-Safe", icon: "💓" },       // Heartbeat
+  { name: "PCOS/PCOD Support", icon: "🧬" },       // Hormone/genes
+  { name: "Senior Nutrition", icon: "👴" },        // Elderly man
+  { name: "Children's Nutrition", icon: "🧒" },    // Child
+  { name: "Immune Boosters", icon: "🛡️" },         // Shield
+  { name: "Thyroid-Supportive", icon: "🦋" },      // Butterfly (thyroid gland shape)
+  { name: "Pregnancy & Postpartum", icon: "🤰" },  // Pregnant woman
+  { name: "Vegan Medical Diets", icon: "🌿" },     // Leaf
 ];
 
 
-export default function DietTypeSelector() {
-  const scrollRef = useRef<HTMLDivElement>(null);
-
-  const scroll=(direction: 'left'|'right')=>{
-    if(scrollRef.current){
-      scrollRef.current.scrollBy({
-        left:direction==='left'? -600:600,
-        behavior:'smooth',
-      })
-    }
-  }
-
-  const navigate = useNavigate();
-  const [selectedDiet, setSelectedDiet] = useState<DietType | null>(null);
-
-  const handleDietSelect = (diet: DietType) => {
-    setSelectedDiet(diet);
-    navigate(`/CategoryPage/${diet}`);
-  };
-
-
   return (
-    <>
-    <div className='flex flex-row relative'>
-      <p className="text-3xl text-left text-gray-600 pt-10 pb-10">Shop by dietary needs:</p>
-      
-      <div className='flex flex-row gap-2 pt-10 absolute right-0'>
-      {/* slide Left Button */}
-      <button
-        onClick={() => scroll('left')}
-        className="w-10 h-10 text-2xl  p-2 flex items-center justify-center shadow-md rounded-full"
-      >
-        ‹
-      </button>
-
-      {/* slide Right Button */}
-      <button
-        onClick={() => scroll('right')}
-        className="w-10 h-10 text-2xl p-2 flex items-center justify-center shadow-md rounded-full"
-      >
-        ›
-      </button>
+    <section className="py-8 px-4">
+      <h2 className="text-2xl font-bold text-center text-green-700 mb-10">Shop by Category</h2>
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+        {categories.map((cat, i) => (
+          <button
+            key={i}
+            className="bg-white shadow-md p-4 rounded-xl text-center hover:bg-green-50"
+          >
+            <div className="text-4xl mb-2">{cat.icon}</div>
+            <p className="font-medium">{cat.name}</p>
+          </button>
+        ))}
       </div>
-      
-    </div>
-
-      
-    <div
-  ref={scrollRef}
-  className="flex overflow-x-auto w-full py-4 px-4 hide-scrollbar"
->
-  {dietTypes.map((diet) => (
-    <button
-      key={diet}
-      onClick={() => handleDietSelect(diet)}
-    >
-      <div className="relative aspect-square w-60 flex-shrink-0 bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 mx-2 border border-gray-100 hover:scale-105">
-        <img
-          src={`/assets/images/${diet.toLowerCase().replace(' ', '-')}.jpg`}
-          alt={diet}
-          className="w-full h-full object-cover rounded-t-lg"
-        />
-
-        <div className="p-4 text-center text-sm font-medium text-gray-700">
-          {diet}
-        </div>
-      </div>
-    </button>
-  ))}
-</div>
-
-<style jsx>{`
-  .hide-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-  .hide-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-`}</style>
-
-    
-    </>
-
+    </section>
   );
-}
+};
+
+export default DietTypeSelector;
