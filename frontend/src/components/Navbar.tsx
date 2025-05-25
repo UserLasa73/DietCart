@@ -90,7 +90,7 @@ export default function Navbar() {
           </NavLink>
 
           <NavLink
-            to="/Shop"
+            to="/shop"
             className={({ isActive }) =>
               isActive ? 'text-green-600' : 'text-gray-600 hover:text-green-600'
             }
@@ -108,12 +108,12 @@ export default function Navbar() {
           </NavLink>
 
           <NavLink
-            to="/Profile"
+            to="/Login"
             className={({ isActive }) =>
               isActive ? 'text-green-600' : 'text-gray-600 hover:text-green-600'
             }
           >
-            Login
+            Profile
           </NavLink>
 
           {/* Wishlist */}

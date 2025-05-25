@@ -15,7 +15,7 @@ const HeroSection = () => {
             Curated by nutrition experts to support every health goal.
           </p>
           <a
-            href="/shop"
+            href="/Shop"
             className="inline-block bg-green-600 text-white px-6 py-3 rounded-full text-lg font-medium hover:bg-green-700 transition"
           >
             Start Shopping 🛒

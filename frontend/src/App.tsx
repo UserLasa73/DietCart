@@ -7,6 +7,10 @@ import Checkout from './pages/Checkout';
 import Confirmation from './pages/Confirmation';
 import Navbar from './components/Navbar';
 import Shop from './pages/Shop';
+import About from './pages/About';
+import Login from './pages/Login';
+import Register from './pages/Register';
+
 
 export default function App() {
   return (
@@ -18,7 +22,9 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/Shop" element={<Shop />} />
-            
+            <Route path="/About" element={<About />} />
+            <Route path="/Login" element={<Login/>} />
+            <Route path="/Register" element={<Register />} />
           </Routes>
         </main>
         
