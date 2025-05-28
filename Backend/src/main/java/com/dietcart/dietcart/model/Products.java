@@ -27,7 +27,7 @@ public class Products {
     @Column(name = "image_url", length = 512)
     private String imageUrl;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "products_diet_types",
         joinColumns = @JoinColumn(name = "product_id"),
