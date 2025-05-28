@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import axios from "axios";
 
 interface Products {
   id: number;
@@ -36,9 +37,9 @@ const Shop = () => {
   ];
 
   useEffect(() => {
-    fetch("http://localhost:8080/api/products")
-      .then((res) => res.json())
-      .then((data) => setProducts(data));
+    axios.get("http://localhost:8080/api/products")
+      .then((res) => setProducts(res.data))
+      .catch((err) => console.error("Failed to load products:", err));
   }, []);
 
   const categories = [
