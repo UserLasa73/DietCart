@@ -11,6 +11,10 @@ import About from './pages/About';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import AdminDashboard from './pages/AdminDashboard';
+import CreateProduct from './pages/CreateProduct';
+import EditProduct from './pages/EditProduct';
+import CreateDietType from './pages/CreateDietType';
+import EditDietType from './pages/EditDietType';
 
 
 export default function App() {
@@ -27,6 +31,10 @@ export default function App() {
             <Route path="/Login" element={<Login/>} />
             <Route path="/Register" element={<Register />} />
             <Route path="/Admin" element={<AdminDashboard />} />
+            <Route path="/admin/products/create" element={<CreateProduct />} />
+            <Route path="/admin/products/edit/:id" element={<EditProduct />} />
+            <Route path="/admin/diet-types/create" element={<CreateDietType />} />
+            <Route path="/admin/diet-types/edit/:id" element={<EditDietType />} />
           </Routes>
         </main>
         
