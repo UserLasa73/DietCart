@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-interface Products {
+interface Product {
   id: number;
   name: string;
   description: string;
   price: number;
+  stockQuantity: number;
+  dietTypes: string[];
 }
 
 interface MealPlan {
@@ -14,8 +16,8 @@ interface MealPlan {
   description: string;
 }
 
-const Shop = () => {
-  const [products, setProducts] = useState<Products[]>([]);
+export default function Shop() {
+  const [products, setProducts] = useState<Product[]>([]);
   const [showMealPlans, setShowMealPlans] = useState(false);
 
   const mealPlans: MealPlan[] = [
@@ -42,27 +44,17 @@ const Shop = () => {
       .catch((err) => console.error("Failed to load products:", err));
   }, []);
 
-  const categories = [
-    'Diabetic-Friendly',
-    'Nut-Free',
-    'Dairy-Free',
-    'Gluten-Free',
-    'Soy-Free',
-    'Egg-Free',
-    'Heart-Healthy',
-    'Weight Management',
-    'Gut Health',
-    'Kidney-Friendly',
-    'Liver Support',
-    'Hypertension-Safe',
-    'PCOS/PCOD Support',
-    'Senior Nutrition',
-    'Children\'s Nutrition',
-    'Immune Boosters',
-    'Thyroid-Supportive',
-    'Pregnancy & Postpartum',
-    'Vegan Medical Diets'
-  ];
+  const [categories, setCategories] = useState<string[]>([]);
+
+  useEffect(() => {
+    axios.get("http://localhost:8080/api/diet-types")
+      .then((res) => {
+        const dietNames = res.data.map((diet: any) => diet.name);
+        setCategories(dietNames);
+      })
+      .catch((err) => console.error("Failed to load diet types:", err));
+  }, []);
+
 
   return (
     <div className="flex min-h-screen">
@@ -76,7 +68,7 @@ const Shop = () => {
                 type="checkbox"
                 id={category}
                 className="mr-2"
-                // onChange handler to be added later
+              // onChange handler to be added later
               />
               <label htmlFor={category}>{category}</label>
             </div>
@@ -110,15 +102,42 @@ const Shop = () => {
             products.map((product) => (
               <div
                 key={product.id}
-                className="overflow-hidden bg-white shadow-md hover:shadow-xl hover:ring-2 hover:ring-green-500 hover:scale-[1.02] transition-all duration-300"
+                className="flex flex-col h-full overflow-hidden bg-white shadow-md hover:shadow-xl hover:ring-2 hover:ring-green-500 transition-all duration-300"
               >
-                <div className="p-4">
-                  <h3 className="text-xl font-semibold mb-2">{product.name}</h3>
-                  <p className="text-gray-600 mb-3 line-clamp-2">{product.description}</p>
-                  <p className="text-green-700 font-bold text-lg">${product.price}</p>
+                {/* Image with fixed aspect ratio */}
+                <div className="aspect-[4/3] bg-gray-100 overflow-hidden">
+                  <img
+                    src="/assets/images/product-placeholder.jpg"
+                    alt={product.name}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
-                <div className="px-4 py-3 bg-gray-50 border-t">
-                  <button className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition-colors">
+
+                {/* Content area with fixed sizing */}
+                <div className="flex-1 p-4 flex flex-col">
+                  {/* Title with fixed height and ellipsis */}
+                  <h3 className="text-sm font-semibold  line-clamp-2 h-[3rem]">
+                    {product.name}
+                  </h3>
+
+                  {/* Description with fixed height */}
+                  {/* <p className="text-gray-600 text-sm line-clamp-3 mb-2 h-[3.75rem]">
+        {product.description}
+      </p> */}
+
+                  {/* Price and stock - always at bottom */}
+                  <div className="mt-auto">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-green-700 font-bold">${product.price.toFixed(2)}</span>
+                      <span className="text-sm text-gray-500">{product.stockQuantity} in stock</span>
+                    </div>
+
+                  </div>
+                </div>
+
+                {/* Add to cart button */}
+                <div className="p-3 bg-gray-50">
+                  <button className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition-colors text-sm">
                     Add to Cart
                   </button>
                 </div>
@@ -131,4 +150,4 @@ const Shop = () => {
   );
 };
 
-export default Shop;
+
