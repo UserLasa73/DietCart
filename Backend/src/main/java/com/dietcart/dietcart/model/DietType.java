@@ -32,7 +32,6 @@ public class DietType {
     public Long getId() { return id; }
     public String getName() { return name; }
     public String getDescription() { return description; }
-    public Set<Products> getProducts() { return products; }
 
     public void setId(Long id) { this.id = id; }
     public void setName(String name) { this.name = name; }
