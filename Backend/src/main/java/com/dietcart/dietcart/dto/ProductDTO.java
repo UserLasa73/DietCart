@@ -5,31 +5,35 @@ import com.dietcart.dietcart.model.Products;
 import java.math.BigDecimal;
 import java.util.List;
 
-public class ProductDTO {
-    private Long id;
-    private String name;
-    private String description;
-    private BigDecimal price;
-    private Integer stockQuantity;
-    private List<String> dietTypes; // Just diet type names
-    
-    // Constructor converts Entity → DTO
-    public ProductDTO(Products product) {
-        this.id = product.getId();
-        this.name = product.getName();
-        this.description = product.getDescription();
-        this.price = product.getPrice();
-        this.stockQuantity = product.getStockQuantity();
-        this.dietTypes = product.getDietTypes().stream()
-                .map(DietType::getName)
-                .toList();
+public record ProductDTO(
+    Long id,                  // null for new products, populated for responses
+    String name,
+    String description,
+    BigDecimal price,
+    Integer stockQuantity,
+    String imageUrl,
+    List<String> dietTypes,    // null for incoming, populated for outgoing
+    List<Long> dietTypeIds
+) {
+    // Constructor for INCOMING data (create/update)
+    public ProductDTO(String name, String description, BigDecimal price, 
+                    Integer stockQuantity, String imageUrl, List<Long> dietTypeIds) {
+        this(null, name, description, price, stockQuantity, imageUrl, null, dietTypeIds);
     }
     
-    // Getters (NO setters for immutability)
-    public Long getId() { return id; }
-    public String getName() { return name; }
-    public String getDescription() { return description; }
-    public BigDecimal getPrice() { return price; }
-    public Integer getStockQuantity() { return stockQuantity; }
-    public List<String> getDietTypes() { return dietTypes; }
+    // Constructor for OUTGOING data (responses)
+    public ProductDTO(Products product) {
+        this(
+            product.getId(),
+            product.getName(),
+            product.getDescription(),
+            product.getPrice(),
+            product.getStockQuantity(),
+            product.getImageUrl(),
+            product.getDietTypes().stream()
+                .map(DietType::getName)
+                .toList(),
+            null  // dietTypeIds not needed in responses
+        );
+    }
 }
