@@ -8,6 +8,7 @@ interface Product {
   price: number;
   stockQuantity: number;
   dietTypes: string[];
+  imageUrl: String ;
 }
 
 interface MealPlan {
@@ -107,10 +108,11 @@ export default function Shop() {
                 {/* Image with fixed aspect ratio */}
                 <div className="aspect-[4/3] bg-gray-100 overflow-hidden">
                   <img
-                    src="/assets/images/product-placeholder.jpg"
+                    src={product.imageUrl ? product.imageUrl : "/assets/images/product-placeholder.jpg"}
                     alt={product.name}
                     className="w-full h-full object-cover"
                   />
+
                 </div>
 
                 {/* Content area with fixed sizing */}
