@@ -1,45 +1,43 @@
-import React from "react";
+import axios from 'axios';
+import { DietType } from '../types/types';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-const DietTypeSelector = () => {
-  const categories = [
-  { name: "Diabetic-Friendly", icon: "🩸" },        // Blood drop
-  { name: "Nut-Free", icon: "🥜🚫" },               // No peanuts
-  { name: "Dairy-Free", icon: "🥛❌" },              // No milk
-  { name: "Gluten-Free", icon: "🌾🚫" },            // No wheat
-  { name: "Soy-Free", icon: "🌱🚫" },               // No soy
-  { name: "Egg-Free", icon: "🥚❌" },               // No eggs
-  { name: "Heart-Healthy", icon: "❤️" },           // Heart
-  { name: "Weight Management", icon: "⚖️" },       // Scale
-  { name: "Gut Health", icon: "🦠" },              // Microbes
-  { name: "Kidney-Friendly", icon: "🫘" },         // Kidney bean (closest representation)
-  { name: "Liver Support", icon: "🍵" },           // Herbal/green tea for detox
-  { name: "Hypertension-Safe", icon: "💓" },       // Heartbeat
-  { name: "PCOS/PCOD Support", icon: "🧬" },       // Hormone/genes
-  { name: "Senior Nutrition", icon: "👴" },        // Elderly man
-  { name: "Children's Nutrition", icon: "🧒" },    // Child
-  { name: "Immune Boosters", icon: "🛡️" },         // Shield
-  { name: "Thyroid-Supportive", icon: "🦋" },      // Butterfly (thyroid gland shape)
-  { name: "Pregnancy & Postpartum", icon: "🤰" },  // Pregnant woman
-  { name: "Vegan Medical Diets", icon: "🌿" },     // Leaf
-];
+export default function DietTypeSelector() {
+  const [categories, setCategories] = useState<string[]>([]);
+  const [selectedDiet, setSelectedDiet] = useState<DietType | null>(null);
+  const navigate = useNavigate();
 
+  useEffect(() => {
+    axios.get("http://localhost:8080/api/diet-types")
+      .then((res) => {
+        const dietNames = res.data.map((diet: any) => diet.name);
+        setCategories(dietNames);
+      })
+      .catch((err) => console.error("Failed to load diet types:", err));
+  }, []);
+
+  const handleDietSelect = (diet: DietType) => {
+    setSelectedDiet(diet);
+    navigate(`/CategoryPage/${diet}`);
+  };
 
   return (
-    <section className="py-8 px-4">
-      <h2 className="text-2xl font-bold text-center text-green-700 mb-10">Shop by Category</h2>
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
-        {categories.map((cat, i) => (
-          <button
-            key={i}
-            className="bg-white shadow-md p-4 rounded-xl text-center hover:bg-green-50"
-          >
-            <div className="text-4xl mb-2">{cat.icon}</div>
-            <p className="font-medium">{cat.name}</p>
-          </button>
-        ))}
-      </div>
-    </section>
+    <div className="flex overflow-x-auto space-x-4 w-full py-2 px-2">
+      {categories.map((diet) => (
+        <button
+          key={diet}
+          onClick={() => handleDietSelect(diet)}
+          className="min-w-[150px] flex-shrink-0 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 transition-transform duration-300 transform hover:scale-105"
+        >
+          <img
+            src={`/assets/images/${diet.toLowerCase().replace(/ /g, '-')}.jpg`}
+            alt={diet}
+            className="w-60 h-60 object-cover rounded-t-lg"
+          />
+          <div className="p-2 text-center font-semibold">{diet}</div>
+        </button>
+      ))}
+    </div>
   );
-};
-
-export default DietTypeSelector;
+}

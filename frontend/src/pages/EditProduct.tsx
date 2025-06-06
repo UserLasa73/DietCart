@@ -16,7 +16,7 @@ export default function EditProduct() {
 
   const handleUpdate = (data: any) => {
     axios.put(`http://localhost:8080/api/products/${id}`, data)
-      .then(() => navigate('/'))
+      .then(() => navigate('/admin'))
       .catch(err => console.error(err));
   };
 
