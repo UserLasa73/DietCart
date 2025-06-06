@@ -19,6 +19,8 @@ export default function ProductForm({ initialData = {}, onSubmit }: ProductFormP
   });
 
   const [dietTypes, setDietTypes] = useState([]);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -31,14 +33,53 @@ export default function ProductForm({ initialData = {}, onSubmit }: ProductFormP
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: name === 'dietTypeIds' ? Array.from(e.target.selectedOptions, option => option.value) : value,
+      [name]: name === 'dietTypeIds' ? Array.from((e.target as HTMLSelectElement).selectedOptions, option => option.value) : value,
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit(formData);
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setSelectedImage(e.target.files[0]);
+    }
   };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    let imageUrl = formData.imageUrl;
+
+    if (selectedImage) {
+      const formDataImage = new FormData();
+      formDataImage.append('image', selectedImage);
+      setUploading(true);
+      try {
+        const res = await axios.post('http://localhost:8080/api/upload', formDataImage, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+        console.log("Upload Response:", res.data);
+        imageUrl = res.data.imageUrl; // backend returns { imageUrl: '...' }
+
+        // Update formData state with the new imageUrl
+        setFormData(prev => ({ ...prev, imageUrl }));
+
+      } catch (err) {
+        console.error('Image upload failed:', err.response || err.message || err);
+        alert("Image upload failed!");
+        setUploading(false);
+        return; // stop submission if upload fails
+      } finally {
+        setUploading(false);
+      }
+    }
+
+    // Prepare final data object with updated imageUrl
+    const finalData = { ...formData, imageUrl };
+
+    console.log("Submitting product data:", finalData);
+
+    onSubmit(finalData);
+  };
+
 
   return (
     <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow">
@@ -54,7 +95,7 @@ export default function ProductForm({ initialData = {}, onSubmit }: ProductFormP
         />
       </div>
       <div className="mb-4">
-        <label className="block text-sm font-medium">description</label>
+        <label className="block text-sm font-medium">Description</label>
         <input
           type="text"
           name="description"
@@ -65,7 +106,7 @@ export default function ProductForm({ initialData = {}, onSubmit }: ProductFormP
         />
       </div>
       <div className="mb-4">
-        <label className="block text-sm font-medium">price</label>
+        <label className="block text-sm font-medium">Price</label>
         <input
           type="number"
           name="price"
@@ -76,7 +117,7 @@ export default function ProductForm({ initialData = {}, onSubmit }: ProductFormP
         />
       </div>
       <div className="mb-4">
-        <label className="block text-sm font-medium">stockQuantity</label>
+        <label className="block text-sm font-medium">Stock Quantity</label>
         <input
           type="number"
           name="stockQuantity"
@@ -86,16 +127,20 @@ export default function ProductForm({ initialData = {}, onSubmit }: ProductFormP
           required
         />
       </div>
+
       <div className="mb-4">
-        <label className="block text-sm font-medium">imageUrl</label>
+        <label className="block text-sm font-medium">Upload Image</label>
         <input
-          type="text"
-          name="imageUrl"
-          value={formData.imageUrl}
-          onChange={handleChange}
-          className="mt-1 block w-full border border-gray-300 rounded px-3 py-2"
-          required
+          type="file"
+          name="image"
+          accept="image/*"
+          onChange={handleFileChange}
+          className="mt-1 block w-full"
         />
+        {uploading && <p className="text-sm text-blue-600 mt-2">Uploading...</p>}
+        {formData.imageUrl && (
+          <img src={formData.imageUrl} alt="Uploaded" className="mt-2 max-h-40 rounded" />
+        )}
       </div>
 
       <div className="mb-4">
@@ -114,6 +159,7 @@ export default function ProductForm({ initialData = {}, onSubmit }: ProductFormP
           ))}
         </select>
       </div>
+
       <div className="flex justify-end space-x-2">
         <button
           type="button"
@@ -125,6 +171,7 @@ export default function ProductForm({ initialData = {}, onSubmit }: ProductFormP
         <button
           type="submit"
           className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+          disabled={uploading}
         >
           Save
         </button>
