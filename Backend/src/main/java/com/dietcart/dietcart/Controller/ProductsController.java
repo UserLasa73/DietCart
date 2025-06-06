@@ -21,9 +21,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-
-
-
 @RestController
 @RequestMapping("/api/products")
 @CrossOrigin(origins = "http://localhost:5173")
@@ -34,7 +31,7 @@ public class ProductsController {
     @Autowired
     private DietTypeRepository dietTypeRepository;
 
-    //Get all
+    // Get all
     @GetMapping
     public List<ProductDTO> getAllProducts() {
         return productsRepository.findAll().stream()
@@ -42,13 +39,13 @@ public class ProductsController {
                 .toList();
     }
 
-    //Get Single
+    // Get Single
     @GetMapping("/{id}")
-    public ResponseEntity <ProductDTO> getProduct(@PathVariable Long id) {
+    public ResponseEntity<ProductDTO> getProduct(@PathVariable Long id) {
         return productsRepository.findById(id)
-        .map(ProductDTO::new)
-        .map(ResponseEntity::ok)
-        .orElse(ResponseEntity.notFound().build());
+                .map(ProductDTO::new)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     // CREATE
@@ -61,15 +58,16 @@ public class ProductsController {
         product.setPrice(productDTO.price());
         product.setStockQuantity(productDTO.stockQuantity());
         product.setImageUrl(productDTO.imageUrl());
-        //diet types??
-        
-        Products savedProduct = productsRepository.save(product); // Save first to get ID for updating product-diet table
+        // diet types??
+
+        Products savedProduct = productsRepository.save(product); // Save first to get ID for updating product-diet
+                                                                  // table
 
         // 2. Handle diet type associations
         if (productDTO.dietTypeIds() != null && !productDTO.dietTypeIds().isEmpty()) {
             List<DietType> diets = dietTypeRepository.findAllById(productDTO.dietTypeIds());
             savedProduct.setDietTypes(new HashSet<>(diets));
-            productsRepository.save(savedProduct);  // Update with associations
+            productsRepository.save(savedProduct); // Update with associations
         }
 
         return ResponseEntity.ok(new ProductDTO(savedProduct));
@@ -80,7 +78,7 @@ public class ProductsController {
     public ResponseEntity<ProductDTO> updateProduct(
             @PathVariable Long id,
             @RequestBody ProductDTO productDTO) {
-        
+
         return productsRepository.findById(id)
                 .map(existingProduct -> {
                     // Update fields
@@ -90,7 +88,7 @@ public class ProductsController {
                     existingProduct.setStockQuantity(productDTO.stockQuantity());
                     existingProduct.setImageUrl(productDTO.imageUrl());
                     // Diet types?????
-                    
+
                     if (productDTO.dietTypeIds() != null) {
                         List<DietType> diets = dietTypeRepository.findAllById(productDTO.dietTypeIds());
                         existingProduct.setDietTypes(new HashSet<>(diets));
@@ -111,6 +109,5 @@ public class ProductsController {
         }
         return ResponseEntity.notFound().build();
     }
-    
-    
+
 }

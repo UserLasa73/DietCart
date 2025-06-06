@@ -111,18 +111,6 @@ public class Products {
     public Set<DietType> getDietTypes() { return dietTypes; }
     public void setDietTypes(Set<DietType> dietTypes) { this.dietTypes = dietTypes; }
 
-    // Helper method to add diet types
-    public void addDietType(DietType dietType) {
-        this.dietTypes.add(dietType);
-        dietType.getProducts().add(this);
-    }
-
-    // Helper method to remove diet types
-    public void removeDietType(DietType dietType) {
-        this.dietTypes.remove(dietType);
-        dietType.getProducts().remove(this);
-    }
-
     
     // -------------------------------
     // toString() (Optional but useful for debugging)
