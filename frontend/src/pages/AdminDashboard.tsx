@@ -85,7 +85,7 @@ export default function AdminDashboard() {
                   <th className="p-3">Price</th>
                   <th className="p-3">Stock</th>
                   <th className="p-3">Diet Tags</th>
-                  <th className="p-3 text-center">Actions</th>
+                  <th className="p-3 w-40 text-center">Actions</th>
                 </tr>
               </thead>
               <tbody>
