@@ -33,7 +33,9 @@ public record ProductDTO(
             product.getDietTypes().stream()
                 .map(DietType::getName)
                 .toList(),
-            null  // dietTypeIds not needed in responses
+            product.getDietTypes().stream()  // Add dietTypeIds for outgoing
+                .map(DietType::getId)
+                .toList()
         );
     }
 }
