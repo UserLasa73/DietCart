@@ -17,8 +17,8 @@ export default function ProductForm({ initialData = {}, onSubmit }: ProductFormP
     price: '',
     stockQuantity: '',
     imageUrl: '',
-    dietTypeIds: initialData.dietTypeIds || 
-    (initialData.dietTypes ? initialData.dietTypes.map((d: any) => d.id) : []),
+    dietTypeIds: initialData.dietTypeIds ||
+      (initialData.dietTypes ? initialData.dietTypes.map((d: any) => d.id) : []),
     ...initialData,
   });
 
@@ -39,8 +39,8 @@ export default function ProductForm({ initialData = {}, onSubmit }: ProductFormP
       setFormData(prev => ({
         ...prev,
         ...initialData,
-        dietTypeIds: initialData.dietTypeIds || 
-                   (initialData.dietTypes ? initialData.dietTypes.map((d: any) => d.id) : [])
+        dietTypeIds: initialData.dietTypeIds ||
+          (initialData.dietTypes ? initialData.dietTypes.map((d: any) => d.id) : [])
       }));
     }
   }, [initialData]);
@@ -56,7 +56,12 @@ export default function ProductForm({ initialData = {}, onSubmit }: ProductFormP
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setSelectedImage(e.target.files[0]);
+      const file = e.target.files[0];
+      setSelectedImage(file);
+
+      // Create temporary preview URL
+      const previewUrl = URL.createObjectURL(file);
+      setFormData(prev => ({ ...prev, imageUrl: previewUrl }));
     }
   };
 
@@ -156,8 +161,13 @@ export default function ProductForm({ initialData = {}, onSubmit }: ProductFormP
           className="mt-1 block w-full"
         />
         {uploading && <p className="text-sm text-blue-600 mt-2">Uploading...</p>}
-        {formData.imageUrl && (
-          <img src={formData.imageUrl} alt="Uploaded" className="mt-2 max-h-40 rounded" />
+        {/* Show either the temporary preview or saved image */}
+        {(selectedImage || formData.imageUrl) && (
+          <img
+            src={selectedImage ? URL.createObjectURL(selectedImage) : formData.imageUrl}
+            alt="Preview"
+            className="mt-2 max-h-40 rounded"
+          />
         )}
       </div>
 
