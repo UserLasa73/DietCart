@@ -15,11 +15,21 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.List;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.Files;
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/products")
@@ -101,13 +111,40 @@ public class ProductsController {
     }
 
     // DELETE
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
-        if (productsRepository.existsById(id)) {
-            productsRepository.deleteById(id);
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
+        return productsRepository.findById(id)
+                .map(product -> {
+                    // Delete the image file if it exists
+                    try {
+                        String imageUrl = product.getImageUrl();
+                        if (imageUrl != null && !imageUrl.isEmpty()) {
+                            // Better URL to filename conversion
+                            String filename = imageUrl.substring(imageUrl.lastIndexOf('/') + 1);
+
+                            // Use proper path resolution (adjust "uploads/images/" to your actual path)
+                            Path imagePath = Paths.get("uploads/images/", filename).toAbsolutePath().normalize();
+
+                            if (Files.exists(imagePath)) {
+                                Files.delete(imagePath);
+                                System.out.println("Deleted image file: " + imagePath);
+                            }
+                        }
+                    } catch (IOException e) {
+                        System.err.println("Failed to delete image file: " + e.getMessage());
+                        // You might want to handle this differently
+                    }
+
+                    // Delete product from DB
+                    productsRepository.delete(product);
+                    System.out.println("Deleted product with ID: " + id);
+                    return ResponseEntity.noContent().<Void>build();
+                })
+                .orElseGet(() -> {
+                    System.out.println("Product not found with ID: " + id);
+                    return ResponseEntity.notFound().build();
+                });
     }
 
 }

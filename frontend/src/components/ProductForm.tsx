@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 interface ProductFormProps {
   initialData?: any;
   onSubmit: (data: any) => void;
 }
+
+
 
 export default function ProductForm({ initialData = {}, onSubmit }: ProductFormProps) {
   const [formData, setFormData] = useState({
@@ -31,7 +33,7 @@ export default function ProductForm({ initialData = {}, onSubmit }: ProductFormP
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev: any) => ({
       ...prev,
       [name]: name === 'dietTypeIds' ? Array.from((e.target as HTMLSelectElement).selectedOptions, option => option.value) : value,
     }));
@@ -60,10 +62,11 @@ export default function ProductForm({ initialData = {}, onSubmit }: ProductFormP
         imageUrl = res.data.imageUrl; // backend returns { imageUrl: '...' }
 
         // Update formData state with the new imageUrl
-        setFormData(prev => ({ ...prev, imageUrl }));
+        setFormData((prev: any) => ({ ...prev, imageUrl }));
 
       } catch (err) {
-        console.error('Image upload failed:', err.response || err.message || err);
+        const error = err as AxiosError;
+        console.error('Image upload failed:', error.response || error.message || error);
         alert("Image upload failed!");
         setUploading(false);
         return; // stop submission if upload fails
