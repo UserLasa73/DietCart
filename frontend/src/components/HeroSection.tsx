@@ -1,38 +1,56 @@
-import React from "react";
+import React from 'react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 
-const HeroSection = () => {
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+
+const slides = [
+  {
+    title: "Eat Clean, Live Green",
+    subtitle: "Curated healthy foods just for your lifestyle.",
+    image: "/assets/images/hero1.jpg",
+  },
+  {
+    title: "Diabetic Friendly Choices",
+    subtitle: "Shop foods that care for your sugar levels.",
+    image: "/assets/images/Hero2.jpg",
+  },
+  {
+    title: "Gluten-Free Goodness",
+    subtitle: "Safe, delicious and gluten-free groceries.",
+    image: "/assets/images/hero3.jpg",
+  },
+];
+
+export default function HeroSection() {
   return (
-    <section className="bg-green-50 py-12 px-4 sm:px-8 lg:px-16">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-8">
-        {/* Text Section */}
-        <div className="flex-1 text-center md:text-left">
-          <h1 className="text-4xl font-bold text-green-900 mb-4 leading-tight">
-            Eat Smart. Shop Healthy. <br />
-            <span className="text-green-600">Welcome to DietCart</span>
-          </h1>
-          <p className="text-lg text-gray-700 mb-6">
-            Your one-stop shop for diabetic-friendly, gluten-free, and diet-focused groceries. 
-            Curated by nutrition experts to support every health goal.
-          </p>
-          <a
-            href="/Shop"
-            className="inline-block bg-green-600 text-white px-6 py-3 rounded-full text-lg font-medium hover:bg-green-700 transition"
-          >
-            Start Shopping 🛒
-          </a>
-        </div>
-
-        {/* Image Section */}
-        <div className="flex-1">
-          <img
-            src="https://cdn-icons-png.flaticon.com/512/2718/2718224.png"
-            alt="Healthy groceries illustration"
-            className="w-full max-w-md mx-auto"
-          />
-        </div>
-      </div>
+    <section className="w-full h-[400px] md:h-[600px]">
+      <Swiper
+        modules={[Navigation, Pagination, Autoplay]}
+        navigation
+        pagination={{ clickable: true }}
+        autoplay={{ delay: 2000 }}
+        loop
+        className="w-full h-full"
+      >
+        {slides.map((slide, index) => (
+          <SwiperSlide key={index}>
+            <div className="relative w-full h-full">
+              <img
+                src={slide.image}
+                alt={slide.title}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-black/40 flex flex-col justify-center items-center text-white text-center p-4">
+                <h2 className="text-3xl md:text-7xl font-bold mb-4">{slide.title}</h2>
+                <p className="text-lg md:text-xl">{slide.subtitle}</p>
+              </div>
+            </div>
+          </SwiperSlide>
+        ))}
+      </Swiper>
     </section>
   );
-};
-
-export default HeroSection;
+}

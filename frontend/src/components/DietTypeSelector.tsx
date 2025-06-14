@@ -24,6 +24,16 @@ export default function DietTypeSelector() {
 
   return (
     <div className="flex overflow-x-auto space-x-4 w-full py-2 px-2">
+      {/* Header with subtitle */}
+      <div className="rounded-xl mb-6 flex flex-col items-center justify-center text-left px-4">
+        <h2 className="text-3xl md:text-5xl font-extrabold text-green-700 mb-2">
+          Explore Diet Categories
+        </h2>
+        <p className="text-md md:text-lg text-green-700 max-w-2xl">
+          Discover foods tailored for specific dietary needs — from diabetic-friendly to gluten-free, we've got you covered!
+        </p>
+      </div>
+
       {categories.map((diet) => (
         <button
           key={diet}
