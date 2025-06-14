@@ -1,3 +1,4 @@
+import AboutUs from '../components/AboutUs';
 import DietTypeSelector from '../components/DietTypeSelector';
 import FeaturedProducts from '../components/FeaturedProducts';
 import HeroSection from '../components/HeroSection';
@@ -11,6 +12,7 @@ export default function Home() {
     <>
     <HeroSection />
     <div className="flex flex-col justify-center p-10 bg-gray-50">
+      <AboutUs />
       <DietTypeSelector />
       <FeaturedProducts />
       <TestimonialSection />
