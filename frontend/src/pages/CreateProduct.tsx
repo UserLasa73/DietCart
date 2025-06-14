@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 export default function CreateProduct() {
+  
   const navigate = useNavigate();
 
   const handleCreate = (data: any) => {
@@ -14,7 +15,7 @@ export default function CreateProduct() {
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <h2 className="text-2xl font-semibold mb-4">Add New Product</h2>
-      <ProductForm onSubmit={handleCreate} />
+      <ProductForm onSubmit={handleCreate} initialData={{ name: "", price: 0, dietTypeIds: [] }}/>
     </div>
   );
 }
