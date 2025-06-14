@@ -68,7 +68,7 @@ public class ProductsController {
         product.setPrice(productDTO.price());
         product.setStockQuantity(productDTO.stockQuantity());
         product.setImageUrl(productDTO.imageUrl());
-        // diet types??
+        
 
         Products savedProduct = productsRepository.save(product); // Save first to get ID for updating product-diet
                                                                   // table

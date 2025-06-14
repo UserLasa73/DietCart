@@ -17,6 +17,9 @@ public class DietType {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Column(length = 500)
+    private String imageUrl;
+
     @ManyToMany(mappedBy = "dietTypes") // Bidirectional relationship
     private Set<Products> products = new HashSet<>();
 
@@ -32,8 +35,10 @@ public class DietType {
     public Long getId() { return id; }
     public String getName() { return name; }
     public String getDescription() { return description; }
+    public String getImageUrl() {return imageUrl;}
 
     public void setId(Long id) { this.id = id; }
     public void setName(String name) { this.name = name; }
     public void setDescription(String description) { this.description = description; }
+    public void setImageUrl(String imageUrl) {this.imageUrl=imageUrl;}
 }
