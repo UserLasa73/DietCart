@@ -41,7 +41,7 @@ export default function Shop() {
 
   useEffect(() => {
     axios.get("http://localhost:8080/api/products")
-      .then((res) => setProducts(res.data))
+      .then((res) => setProducts(res.data.sort((a: any, b: any) => b.id - a.id))) //sorted by ids to show latest first
       .catch((err) => console.error("Failed to load products:", err));
   }, []);
 
