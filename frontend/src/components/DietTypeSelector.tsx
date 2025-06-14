@@ -28,15 +28,16 @@ export default function DietTypeSelector() {
   return (
     <div className="p-4">
       <div className="text-center mb-6">
-        <h2 className="text-3xl md:text-5xl font-extrabold text-green-700 mb-2">
+        <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
           Explore Diet Categories
         </h2>
+        <div className="w-20 h-1 bg-green-500 mx-auto"></div>
         <p className="text-md md:text-lg text-green-700 max-w-2xl mx-auto">
           Discover foods tailored for specific dietary needs — from diabetic-friendly to gluten-free, we've got you covered!
         </p>
       </div>
 
-      <div className="flex overflow-x-auto space-x-4 w-full py-2 px-2">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 w-full py-5 px-2">
         {dietTypes.map((diet) => (
           <button
             key={diet.id}
