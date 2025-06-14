@@ -98,14 +98,6 @@ export default function Navbar() {
             Shop
           </NavLink>
 
-          <NavLink
-            to="/About"
-            className={({ isActive }) =>
-              isActive ? 'text-green-600' : 'text-gray-600 hover:text-green-600'
-            }
-          >
-            About
-          </NavLink>
 
           <NavLink
             to="/Login"
