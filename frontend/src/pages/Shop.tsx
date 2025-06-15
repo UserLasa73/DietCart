@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axios, { CancelTokenSource } from "axios";
+import ProductCard from "../components/ProductCard";
 
 interface Product {
   id: number;
@@ -8,7 +9,8 @@ interface Product {
   price: number;
   stockQuantity: number;
   dietTypes: string[];
-  imageUrl: String ;
+  dietTypeIds: number[];
+  imageUrl: string;
 }
 
 interface MealPlan {
@@ -17,8 +19,17 @@ interface MealPlan {
   description: string;
 }
 
+interface DietType {
+  id: number;
+  name: string;
+}
+
 export default function Shop() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [selectedDietTypes, setSelectedDietTypes] = useState<number[]>([]);
+  const [dietTypes, setDietTypes] = useState<DietType[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [showMealPlans, setShowMealPlans] = useState(false);
 
   const mealPlans: MealPlan[] = [
@@ -39,117 +50,120 @@ export default function Shop() {
     },
   ];
 
+  // Fetch products with filtering
   useEffect(() => {
-    axios.get("http://localhost:8080/api/products")
-      .then((res) => setProducts(res.data.sort((a: any, b: any) => b.id - a.id))) //sorted by ids to show latest first
-      .catch((err) => console.error("Failed to load products:", err));
-  }, []);
+    const fetchProducts = async () => {
+      setIsLoading(true);
+      setError(null);
+      
+      try {
+        const params = {
+          dietTypeIds: selectedDietTypes.length > 0 
+            ? selectedDietTypes.join(',') 
+            : undefined
+        };
+  
+        // Axios automatically removes undefined params
+        const response = await axios.get(
+          `http://localhost:8080/api/products/filter`, 
+          { params }
+        );
+  
+        setProducts(response.data);
+      } catch (err) {
+        const errorMessage = err.response?.data?.message || 
+                           err.message || 
+                           'Failed to load products';
+        setError(errorMessage);
+        
+        console.error('Error fetching products:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+  
+    fetchProducts();
+  }, [selectedDietTypes]);
 
-  const [categories, setCategories] = useState<string[]>([]);
-
+  // Fetch diet types
   useEffect(() => {
     axios.get("http://localhost:8080/api/diet-types")
-      .then((res) => {
-        const dietNames = res.data.map((diet: any) => diet.name);
-        setCategories(dietNames);
-      })
-      .catch((err) => console.error("Failed to load diet types:", err));
+      .then((res) => setDietTypes(res.data))
+      .catch((err) => {
+        console.error("Failed to load diet types:", err);
+        setError("Failed to load diet categories");
+      });
   }, []);
 
+  const handleDietTypeToggle = (dietTypeId: number) => {
+    setSelectedDietTypes(prev => 
+      prev.includes(dietTypeId)
+        ? prev.filter(id => id !== dietTypeId)
+        : [...prev, dietTypeId]
+    );
+  };
 
   return (
     <div className="flex min-h-screen">
       {/* Filter Sidebar */}
       <div className="w-64 p-4 bg-gray-50 border-r">
         <h3 className="text-lg font-bold mb-4">Filter by Category</h3>
+        {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
         <div className="space-y-2">
-          {categories.map((category) => (
-            <div key={category} className="flex items-center">
+          {dietTypes.map((dietType) => (
+            <div key={dietType.id} className="flex items-center">
               <input
                 type="checkbox"
-                id={category}
+                id={`diet-${dietType.id}`}
+                checked={selectedDietTypes.includes(dietType.id)}
+                onChange={() => handleDietTypeToggle(dietType.id)}
                 className="mr-2"
-              // onChange handler to be added later
+                disabled={isLoading}
               />
-              <label htmlFor={category}>{category}</label>
+              <label htmlFor={`diet-${dietType.id}`}>{dietType.name}</label>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Products or Meal Plans Section */}
+      {/* Main Content */}
       <div className="flex-1 p-6">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold">
             {showMealPlans ? "Meal Plans" : "Products List"}
           </h2>
           <button
-            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition disabled:opacity-50"
             onClick={() => setShowMealPlans(!showMealPlans)}
+            disabled={isLoading}
           >
             {showMealPlans ? "Show Products" : "Show Meal Plans"}
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {showMealPlans ? (
-            mealPlans.map((plan) => (
+        {isLoading ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
+          </div>
+        ) : error ? (
+          <div className="text-red-500 text-center py-8">{error}</div>
+        ) : showMealPlans ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {mealPlans.map((plan) => (
               <div key={plan.id} className="bg-white shadow-md p-4 border-l-4 border-green-600">
                 <h3 className="text-xl font-semibold mb-2">{plan.title}</h3>
                 <p className="text-gray-700">{plan.description}</p>
               </div>
-            ))
-          ) : (
-            products.map((product) => (
-              <div
-                key={product.id}
-                className="flex flex-col h-full overflow-hidden bg-white shadow-md hover:shadow-xl hover:ring-2 hover:ring-green-500 transition-all duration-300"
-              >
-                {/* Image with fixed aspect ratio */}
-                <div className="aspect-[4/3] bg-gray-100 overflow-hidden">
-                  <img
-                    src={product.imageUrl ? product.imageUrl : "/assets/images/product-placeholder.jpg"}
-                    alt={product.name}
-                    className="w-full h-full object-cover"
-                  />
-
-                </div>
-
-                {/* Content area with fixed sizing */}
-                <div className="flex-1 p-4 flex flex-col">
-                  {/* Title with fixed height and ellipsis */}
-                  <h3 className="text-sm font-semibold  line-clamp-2 h-[3rem]">
-                    {product.name}
-                  </h3>
-
-                  {/* Description with fixed height */}
-                  {/* <p className="text-gray-600 text-sm line-clamp-3 mb-2 h-[3.75rem]">
-        {product.description}
-      </p> */}
-
-                  {/* Price and stock - always at bottom */}
-                  <div className="mt-auto">
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-green-700 font-bold">${product.price.toFixed(2)}</span>
-                      <span className="text-sm text-gray-500">{product.stockQuantity} in stock</span>
-                    </div>
-
-                  </div>
-                </div>
-
-                {/* Add to cart button */}
-                <div className="p-3 bg-gray-50">
-                  <button className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition-colors text-sm">
-                    Add to Cart
-                  </button>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {products.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
 };
-
-
