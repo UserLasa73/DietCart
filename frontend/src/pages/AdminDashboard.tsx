@@ -9,14 +9,33 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<"products" | "dietTypes">("products");
   const navigate = useNavigate();
 
+  const [loading, setLoading] = useState({
+    products: true,
+    dietTypes: true
+  });
+
   useEffect(() => {
     axios.get("http://localhost:8080/api/products")
-      .then(res => setProducts(res.data))
-      .catch(err => console.error(err));
+      .then(res => {
+        setProducts(res.data);
+        setLoading(prev => ({ ...prev, products: false }));
+      })
+      .catch(err => {
+        console.error(err);
+        setLoading(prev => ({ ...prev, products: false }));
+      });
+
 
     axios.get("http://localhost:8080/api/diet-types")
-      .then(res => setDietTypes(res.data))
-      .catch(err => console.error(err));
+      .then(res => {
+        setDietTypes(res.data);
+        setLoading(prev => ({ ...prev, dietTypes: false }));
+      })
+      .catch(err => {
+        console.error(err);
+        setLoading(prev => ({ ...prev, dietTypes: false }));
+      });
+
   }, []);
 
   const handleDeleteProduct = (id: number) => {
@@ -49,17 +68,15 @@ export default function AdminDashboard() {
       <div className="flex justify-center mb-8">
         <button
           onClick={() => setActiveTab("products")}
-          className={`px-4 py-2 font-semibold rounded-l ${
-            activeTab === "products" ? "bg-green-600 text-white" : "bg-green-200 text-green-800"
-          }`}
+          className={`px-4 py-2 font-semibold rounded-l ${activeTab === "products" ? "bg-green-600 text-white" : "bg-green-200 text-green-800"
+            }`}
         >
           Products
         </button>
         <button
           onClick={() => setActiveTab("dietTypes")}
-          className={`px-4 py-2 font-semibold rounded-r ${
-            activeTab === "dietTypes" ? "bg-green-600 text-white" : "bg-green-200 text-green-800"
-          }`}
+          className={`px-4 py-2 font-semibold rounded-r ${activeTab === "dietTypes" ? "bg-green-600 text-white" : "bg-green-200 text-green-800"
+            }`}
         >
           Diet Types
         </button>
@@ -70,7 +87,7 @@ export default function AdminDashboard() {
         <div className="mb-12">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-semibold">Manage Products</h2>
-            <button 
+            <button
               onClick={() => navigate('/admin/products/create')}
               className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
               + Add Product
@@ -105,13 +122,13 @@ export default function AdminDashboard() {
                       ))}
                     </td>
                     <td className="p-3 text-center space-x-2">
-                      <button  
+                      <button
                         onClick={() => navigate(`/admin/products/edit/${product.id}`)}
                         className="px-3 py-1 text-white bg-blue-600 rounded hover:bg-blue-700">
                         Edit
                       </button>
-                      <button 
-                        onClick={() =>handleDeleteProduct(product.id)}
+                      <button
+                        onClick={() => handleDeleteProduct(product.id)}
                         className="px-3 py-1 text-white bg-red-600 rounded hover:bg-red-700">
                         Delete
                       </button>
@@ -163,9 +180,9 @@ export default function AdminDashboard() {
                   </button>
                 </div>
               </div>
-    ))}
-  </div>
-</div>
+            ))}
+          </div>
+        </div>
 
       )}
     </div>
