@@ -5,6 +5,8 @@ import com.dietcart.dietcart.model.DietType;
 import com.dietcart.dietcart.model.Products;
 import com.dietcart.dietcart.Repository.DietTypeRepository;
 import com.dietcart.dietcart.Repository.ProductsRepository;
+
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,8 +24,8 @@ public class ProductService {
     private final ProductsRepository productsRepository;
     private final DietTypeRepository dietTypeRepository;
 
-    public ProductService(ProductsRepository productsRepository, 
-                        DietTypeRepository dietTypeRepository) {
+    public ProductService(ProductsRepository productsRepository,
+            DietTypeRepository dietTypeRepository) {
         this.productsRepository = productsRepository;
         this.dietTypeRepository = dietTypeRepository;
     }
@@ -103,4 +105,21 @@ public class ProductService {
                 })
                 .orElse(false);
     }
+
+
+    public List<ProductDTO> filterProducts(List<Long> dietTypeIds) {
+        // Convert empty list to null for the repository query
+        List<Long> searchDietIds = (dietTypeIds == null || dietTypeIds.isEmpty()) 
+            ? null 
+            : dietTypeIds;
+        
+        // Execute query using the simplified repository method
+        List<Products> filteredProducts = productsRepository.findByDietTypes(searchDietIds);
+        
+        // Convert to DTOs
+        return filteredProducts.stream()
+            .map(ProductDTO::new)
+            .collect(Collectors.toList());
+    }
+    
 }
