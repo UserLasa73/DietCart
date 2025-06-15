@@ -3,11 +3,11 @@ package com.dietcart.dietcart.Controller;
 import com.dietcart.dietcart.dto.ProductDTO;
 import com.dietcart.dietcart.Service.ProductService;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.CrossOrigin;
 
 @RestController
 @RequestMapping("/api/products")
@@ -28,9 +28,23 @@ public class ProductsController {
     @GetMapping("/{id}")
     public ResponseEntity<ProductDTO> getProduct(@PathVariable Long id) {
         ProductDTO productDTO = productService.getProductById(id);
-        return productDTO != null ? 
-            ResponseEntity.ok(productDTO) : 
-            ResponseEntity.notFound().build();
+        return productDTO != null ? ResponseEntity.ok(productDTO) : ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<List<ProductDTO>> filterProducts(
+            @RequestParam(required = false) String dietTypeIds) {
+
+        List<Long> dietIds = null;
+
+        if (dietTypeIds != null && !dietTypeIds.isEmpty()) {
+            dietIds = Arrays.stream(dietTypeIds.split(","))
+                    .map(Long::parseLong)
+                    .toList();
+        }
+
+        List<ProductDTO> filteredProducts = productService.filterProducts(dietIds);
+        return ResponseEntity.ok(filteredProducts);
     }
 
     @PostMapping
@@ -44,16 +58,12 @@ public class ProductsController {
             @PathVariable Long id,
             @RequestBody ProductDTO productDTO) {
         ProductDTO updatedProduct = productService.updateProduct(id, productDTO);
-        return updatedProduct != null ?
-            ResponseEntity.ok(updatedProduct) :
-            ResponseEntity.notFound().build();
+        return updatedProduct != null ? ResponseEntity.ok(updatedProduct) : ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
         boolean deleted = productService.deleteProduct(id);
-        return deleted ?
-            ResponseEntity.noContent().build() :
-            ResponseEntity.notFound().build();
+        return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
 }
