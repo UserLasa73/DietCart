@@ -103,6 +103,14 @@ export default function Shop() {
     );
   };
 
+  // Helper function to get selected diet type names for Topic Section
+  const getSelectedDietNames = () => {
+    return selectedDietTypes.map(id => {
+      const diet = dietTypes.find(d => d.id === id);
+      return diet ? diet.name : '';
+    }).filter(name => name !== '');
+  };
+
   return (
     <div className="flex min-h-screen">
       {/* Filter Sidebar */}
@@ -140,6 +148,24 @@ export default function Shop() {
             {showMealPlans ? "Show Products" : "Show Meal Plans"}
           </button>
         </div>
+
+        {/* Display Selected Filters in Header as Topic*/}
+        {selectedDietTypes.length > 0 && !showMealPlans && (
+          <div className="bg-green-50 border-l-4 border-green-500 p-4 mb-6 rounded-md shadow-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            <div className="flex flex-wrap gap-3">
+              {getSelectedDietNames().map((name, index) => (
+                <span
+                  key={index}
+                  className="bg-green-200 text-green-900 px-4 py-1.5 rounded-full text-2xl font-medium shadow"
+                >
+                  {name}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+        )}
 
         {isLoading ? (
           <div className="flex justify-center items-center h-64">
