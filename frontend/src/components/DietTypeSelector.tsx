@@ -11,7 +11,9 @@ interface DietType {
 
 export default function DietTypeSelector() {
   const [dietTypes, setDietTypes] = useState<DietType[]>([]);
+  const [selected, setSelected] = useState<number[]>([]);
   const navigate = useNavigate();
+  
 
   useEffect(() => {
     axios.get("http://localhost:8080/api/diet-types")
@@ -21,9 +23,15 @@ export default function DietTypeSelector() {
       .catch((err) => console.error("Failed to load diet types:", err));
   }, []);
 
-  const handleDietSelect = (diet: DietType) => {
-    navigate(`/CategoryPage/${diet.id}`); // navigate using the ID
+  const handleDietSelect = (id: number) => {
+    const newSelected = selected.includes(id)
+      ? selected.filter(d => d !== id)
+      : [...selected, id];
+  
+    setSelected(newSelected);
+    navigate(`/shop?dietTypeIds=${newSelected.join(",")}`);
   };
+  
 
   return (
     <div className="p-4">
@@ -41,7 +49,7 @@ export default function DietTypeSelector() {
         {dietTypes.map((diet) => (
           <button
             key={diet.id}
-            onClick={() => handleDietSelect(diet)}
+            onClick={() => handleDietSelect(diet.id)}
             className="min-w-[200px] flex-shrink-0 bg-white rounded-lg shadow-md hover:shadow-lg transition-transform duration-300 transform hover:scale-105"
           >
             <img
