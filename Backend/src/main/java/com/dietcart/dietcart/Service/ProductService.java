@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -109,12 +110,15 @@ public class ProductService {
 
     public List<ProductDTO> filterProducts(List<Long> dietTypeIds) {
         // Convert empty list to null for the repository query
-        List<Long> searchDietIds = (dietTypeIds == null || dietTypeIds.isEmpty()) 
-            ? null 
-            : dietTypeIds;
+        // List<Long> searchDietIds = (dietTypeIds == null || dietTypeIds.isEmpty()) 
+        //     ? null 
+        //     : dietTypeIds;
         
-        // Execute query using the simplified repository method
-        List<Products> filteredProducts = productsRepository.findByDietTypes(searchDietIds);
+        if (dietTypeIds == null || dietTypeIds.isEmpty()) {
+        return new ArrayList<>(); // Or `Collections.emptyList();`
+    }
+
+        List<Products> filteredProducts = productsRepository.findByDietTypes(dietTypeIds);
         
         // Convert to DTOs
         return filteredProducts.stream()
