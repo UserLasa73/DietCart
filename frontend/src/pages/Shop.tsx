@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios, { CancelTokenSource } from "axios";
 import ProductCard from "../components/ProductCard";
+import { useLocation } from "react-router-dom";
 
 interface Product {
   id: number;
@@ -25,8 +26,18 @@ interface DietType {
 }
 
 export default function Shop() {
+  
+  function useQuery() {
+    return new URLSearchParams(useLocation().search);
+  }
+
+  const query = useQuery();
+  const initialDietIds = query.get("dietTypeIds")
+    ? query.get("dietTypeIds")!.split(",").map(Number)
+    : [];
+
   const [products, setProducts] = useState<Product[]>([]);
-  const [selectedDietTypes, setSelectedDietTypes] = useState<number[]>([]);
+  const [selectedDietTypes, setSelectedDietTypes] = useState<number[]>(initialDietIds);
   const [dietTypes, setDietTypes] = useState<DietType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -115,7 +126,7 @@ export default function Shop() {
     <div className="flex min-h-screen">
       {/* Filter Sidebar */}
       <div className="w-64 p-4 bg-gray-50 border-r">
-        <h3 className="text-lg font-bold mb-4">Filter by Category</h3>
+        <h3 className="text-lg font-bold mb-4">Select Your Diet</h3>
         {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
         <div className="space-y-2">
           {dietTypes.map((dietType) => (
