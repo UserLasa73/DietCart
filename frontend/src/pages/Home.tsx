@@ -11,9 +11,9 @@ export default function Home() {
   return (
     <>
     <HeroSection />
-    <div className="flex flex-col justify-center p-10 bg-gray-50">
-      <AboutUs />
+    <div className="flex flex-col justify-center">
       <DietTypeSelector />
+      <AboutUs />
       <FeaturedProducts />
       <TestimonialSection />
       <WhyChooseUs />

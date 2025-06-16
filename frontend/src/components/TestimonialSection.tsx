@@ -26,7 +26,7 @@ const testimonials = [
 
 const TestimonialSection = () => {
   return (
-    <section className="bg-gray-50 py-12 px-4 sm:px-8 lg:px-16">
+    <section className="bg-gray-50 py-12 px-4 sm:px-8 lg:px-16 ">
       <h2 className="text-2xl font-bold text-center text-green-700 mb-10">
         What Our Customers Say
       </h2>
