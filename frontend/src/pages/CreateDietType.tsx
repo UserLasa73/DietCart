@@ -1,6 +1,6 @@
 import { useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import api from "../utils/api";
 
 export default function CreateDietType() {
   const [name, setName] = useState("");
@@ -30,7 +30,7 @@ export default function CreateDietType() {
       formData.append("image", image);
       setUploading(true);
       try {
-        const res = await axios.post("http://localhost:8080/api/upload", formData, {
+        const res = await api.post("/upload", formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
         uploadedUrl = res.data.imageUrl;
@@ -46,7 +46,7 @@ export default function CreateDietType() {
     }
 
     try {
-      await axios.post("http://localhost:8080/api/diet-types", {
+      await api.post("/diet-types", {
         name,
         description,
         imageUrl: uploadedUrl,

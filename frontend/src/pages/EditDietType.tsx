@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import axios, { AxiosError } from "axios";
 import { useNavigate, useParams } from "react-router-dom";
+import api from "../utils/api";
+import { AxiosError } from "axios";
 
 export default function EditDietType() {
   const { id } = useParams();
@@ -12,12 +13,11 @@ export default function EditDietType() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios
-      .get(`http://localhost:8080/api/diet-types/${id}`)
+    api.get(`/diet-types/${id}`)
       .then((res) => {
         setName(res.data.name);
         setDescription(res.data.description);
-        setImageUrl(res.data.imageUrl); // existing image
+        setImageUrl(res.data.imageUrl);
       })
       .catch((err) => console.error("Error loading diet type", err));
   }, [id]);
@@ -26,9 +26,8 @@ export default function EditDietType() {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       setSelectedImage(file);
-
       const previewUrl = URL.createObjectURL(file);
-      setImageUrl(previewUrl); // preview image
+      setImageUrl(previewUrl);
     }
   };
 
@@ -43,10 +42,10 @@ export default function EditDietType() {
       setUploading(true);
 
       try {
-        const res = await axios.post("http://localhost:8080/api/upload", formData, {
+        const res = await api.post("/upload", formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
-        finalImageUrl = res.data.imageUrl; // returned from backend
+        finalImageUrl = res.data.imageUrl;
         setUploading(false);
       } catch (err) {
         const error = err as AxiosError;
@@ -58,7 +57,7 @@ export default function EditDietType() {
     }
 
     try {
-      await axios.put(`http://localhost:8080/api/diet-types/${id}`, {
+      await api.put(`/diet-types/${id}`, {
         name,
         description,
         imageUrl: finalImageUrl,

@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import ProductForm from '../components/ProductForm';
-import axios from 'axios';
+import api from '../utils/api';
 
 export default function EditProduct() {
   const { id } = useParams();
@@ -13,7 +13,7 @@ export default function EditProduct() {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const res = await axios.get(`http://localhost:8080/api/products/${id}`);
+        const res = await api.get(`/products/${id}`);
         
         // Ensure dietTypeIds is an array
         const data = {
@@ -37,7 +37,7 @@ export default function EditProduct() {
 
   const handleUpdate = async (data: any) => {
     try {
-      await axios.put(`http://localhost:8080/api/products/${id}`, data);
+      await api.put(`/products/${id}`, data);
       navigate('/admin');
     } catch (err) {
       console.error(err);
