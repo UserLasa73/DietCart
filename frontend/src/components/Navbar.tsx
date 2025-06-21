@@ -39,7 +39,7 @@ export default function Navbar() {
           </NavLink>
 
           <NavLink
-            to="/Login"
+            to="/Profile"
             className={({ isActive }) =>
               isActive ? 'text-green-600' : 'text-gray-600 hover:text-green-600'
             }

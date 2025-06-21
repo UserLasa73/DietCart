@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios, { CancelTokenSource } from "axios";
+import api from '../utils/api';
 import ProductCard from "../components/ProductCard";
 import { useLocation } from "react-router-dom";
 
@@ -26,7 +26,7 @@ interface DietType {
 }
 
 export default function Shop() {
-  
+
   function useQuery() {
     return new URLSearchParams(useLocation().search);
   }
@@ -66,39 +66,34 @@ export default function Shop() {
     const fetchProducts = async () => {
       setIsLoading(true);
       setError(null);
-      
+
       try {
-        const params = {
-          dietTypeIds: selectedDietTypes.length > 0 
-            ? selectedDietTypes.join(',') 
-            : undefined
-        };
-  
-        // Axios automatically removes undefined params
-        const response = await axios.get(
-          `http://localhost:8080/api/products/filter`, 
-          { params }
-        );
-  
+        const response = await api.get('/products/filter', { // Note: No full URL needed
+          params: {
+            dietTypeIds: selectedDietTypes.length > 0
+              ? selectedDietTypes.join(',')
+              : undefined
+          }
+        });
         setProducts(response.data);
       } catch (err) {
-        const errorMessage = err.response?.data?.message || 
-                           err.message || 
-                           'Failed to load products';
+        const errorMessage = err.response?.data?.message ||
+          err.message ||
+          'Failed to load products';
         setError(errorMessage);
-        
+
         console.error('Error fetching products:', err);
       } finally {
         setIsLoading(false);
       }
     };
-  
+
     fetchProducts();
   }, [selectedDietTypes]);
 
   // Fetch diet types
   useEffect(() => {
-    axios.get("http://localhost:8080/api/diet-types")
+    api.get("/diet-types") // Simplified URL
       .then((res) => setDietTypes(res.data))
       .catch((err) => {
         console.error("Failed to load diet types:", err);
@@ -107,7 +102,7 @@ export default function Shop() {
   }, []);
 
   const handleDietTypeToggle = (dietTypeId: number) => {
-    setSelectedDietTypes(prev => 
+    setSelectedDietTypes(prev =>
       prev.includes(dietTypeId)
         ? prev.filter(id => id !== dietTypeId)
         : [...prev, dietTypeId]
@@ -163,19 +158,19 @@ export default function Shop() {
         {/* Display Selected Filters in Header as Topic*/}
         {selectedDietTypes.length > 0 && !showMealPlans && (
           <div className="bg-green-50 border-l-4 border-green-500 p-4 mb-6 rounded-md shadow-sm">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-            <div className="flex flex-wrap gap-3">
-              {getSelectedDietNames().map((name, index) => (
-                <span
-                  key={index}
-                  className="bg-green-200 text-green-900 px-4 py-1.5 rounded-full text-2xl font-medium shadow"
-                >
-                  {name}
-                </span>
-              ))}
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+              <div className="flex flex-wrap gap-3">
+                {getSelectedDietNames().map((name, index) => (
+                  <span
+                    key={index}
+                    className="bg-green-200 text-green-900 px-4 py-1.5 rounded-full text-2xl font-medium shadow"
+                  >
+                    {name}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
         )}
 
         {isLoading ? (
