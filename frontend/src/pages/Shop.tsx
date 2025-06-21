@@ -68,13 +68,14 @@ export default function Shop() {
       setError(null);
 
       try {
-        const response = await api.get('/products/filter', { // Note: No full URL needed
+        const response = await api.get('/products/filter', {
           params: {
             dietTypeIds: selectedDietTypes.length > 0
               ? selectedDietTypes.join(',')
               : undefined
           }
         });
+        console.log("fetched product is:",response.data);
         setProducts(response.data);
       } catch (err) {
         const errorMessage = err.response?.data?.message ||
@@ -120,7 +121,7 @@ export default function Shop() {
   return (
     <div className="flex min-h-screen">
       {/* Filter Sidebar */}
-      <div className="w-64 p-4 bg-gray-50 border-r">
+      <div className="w-64 p-4 bg-gray-50">
         <h3 className="text-lg font-bold mb-4">Select Your Diet</h3>
         {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
         <div className="space-y-2">
@@ -155,17 +156,15 @@ export default function Shop() {
           </button>
         </div>
 
-        {/* Display Selected Filters in Header as Topic*/}
+        {/* Selected Filters Banner Header */}
         {selectedDietTypes.length > 0 && !showMealPlans && (
-          <div className="bg-green-50 border-l-4 border-green-500 p-4 mb-6 rounded-md shadow-sm">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-              <div className="flex flex-wrap gap-3">
+          <div className="bg-green-600 text-white p-4 mb-6">
+            <div className="container mx-auto">
+              <div className="flex flex-wrap gap-x-3 items-center">
                 {getSelectedDietNames().map((name, index) => (
-                  <span
-                    key={index}
-                    className="bg-green-200 text-green-900 px-4 py-1.5 rounded-full text-2xl font-medium shadow"
-                  >
+                  <span key={index} className="text-xl font-bold">
                     {name}
+                    {index < selectedDietTypes.length - 1 && " / "}
                   </span>
                 ))}
               </div>

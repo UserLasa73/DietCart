@@ -66,7 +66,7 @@ public class SecurityConfig {
                         // .requestMatchers(HttpMethod.POST, "/api/diet-types").hasRole("ADMIN") // Protected writes
                         // .requestMatchers(HttpMethod.PUT, "/api/diet-types/**").hasRole("ADMIN")
                         // .requestMatchers(HttpMethod.DELETE, "/api/diet-types/**").hasRole("ADMIN")
-                        
+                        .requestMatchers("/uploads/images/**").permitAll()
                         .anyRequest().authenticated());
 
         http.addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
@@ -86,4 +86,5 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+    
 }
