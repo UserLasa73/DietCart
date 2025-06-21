@@ -1,23 +1,32 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { login, error: authError, clearError, loading } = useAuth(); // Get from context
+  const navigate = useNavigate();
 
-  const navigate= useNavigate();
-
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Logging in:", { email, password });
-    navigate("/Shop")
-    // You will implement real auth here later
+    clearError(); // Use context's error clearing
+
+    const result = await login(email, password); // Calling the context function
+    if (result.success) {
+      navigate('/');
+    }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="w-full max-w-md p-8 bg-white rounded shadow">
         <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
+        {authError && ( // Use authError from context
+          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">
+            {authError}
+          </div>
+        )}
         <form onSubmit={handleLogin} className="space-y-4">
           <input
             type="email"
@@ -37,13 +46,17 @@ const Login = () => {
           />
           <button
             type="submit"
-            className="w-full bg-green-600 text-white p-3 rounded hover:bg-green-700 transition"
+            disabled={loading} // Use isLoading from context
+            className="w-full bg-green-600 text-white p-3 rounded hover:bg-green-700 transition disabled:opacity-50"
           >
-            Log In
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
         <p className="mt-4 text-center text-sm text-gray-600">
-          Don't have an account? <a href="/register" className="text-green-600 hover:underline">Register</a>
+          Don't have an account?{" "}
+          <Link to="/register" className="text-green-600 hover:underline">
+            Register
+          </Link>
         </p>
       </div>
     </div>
