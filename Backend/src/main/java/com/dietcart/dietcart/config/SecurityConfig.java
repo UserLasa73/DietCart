@@ -66,6 +66,7 @@ public class SecurityConfig {
                         // .requestMatchers(HttpMethod.POST, "/api/diet-types").hasRole("ADMIN") // Protected writes
                         // .requestMatchers(HttpMethod.PUT, "/api/diet-types/**").hasRole("ADMIN")
                         // .requestMatchers(HttpMethod.DELETE, "/api/diet-types/**").hasRole("ADMIN")
+                        
                         .anyRequest().authenticated());
 
         http.addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);

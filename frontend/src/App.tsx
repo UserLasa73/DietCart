@@ -31,7 +31,7 @@ export default function App() {
               {/* Authenticated routes */}
               <Route element={<AuthRoute />}>
                 <Route path="/Shop" element={<Shop />} />
-                <Route path="/profile" element={<Profile />} />
+                <Route path="/Profile" element={<Profile />} />
               </Route>
               {/* Admin routes */}
               <Route element={<AdminRoute />}>
