@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../utils/api";
 import { useNavigate } from 'react-router-dom';
 
 
@@ -15,7 +15,8 @@ export default function AdminDashboard() {
   });
 
   useEffect(() => {
-    axios.get("http://localhost:8080/api/products")
+    // Fetch products
+    api.get("/products")
       .then(res => {
         setProducts(res.data);
         setLoading(prev => ({ ...prev, products: false }));
@@ -25,8 +26,8 @@ export default function AdminDashboard() {
         setLoading(prev => ({ ...prev, products: false }));
       });
 
-
-    axios.get("http://localhost:8080/api/diet-types")
+    // Fetch diet types
+    api.get("/diet-types")
       .then(res => {
         setDietTypes(res.data);
         setLoading(prev => ({ ...prev, dietTypes: false }));
@@ -35,12 +36,11 @@ export default function AdminDashboard() {
         console.error(err);
         setLoading(prev => ({ ...prev, dietTypes: false }));
       });
-
   }, []);
 
   const handleDeleteProduct = (id: number) => {
     if (window.confirm('Are you sure you want to delete this product?')) {
-      axios.delete(`http://localhost:8080/api/products/${id}`)
+      api.delete(`/products/${id}`)
         .then(() => {
           setProducts(prev => prev.filter(product => product.id !== id));
         })
@@ -51,8 +51,7 @@ export default function AdminDashboard() {
 
   const handleDeleteDietType = (id: number) => {
     if (window.confirm("Are you sure you want to delete this diet type?")) {
-      axios
-        .delete(`http://localhost:8080/api/diet-types/${id}`)
+      api.delete(`/diet-types/${id}`)
         .then(() => {
           setDietTypes(prev => prev.filter(diet => diet.id !== id));
         })
