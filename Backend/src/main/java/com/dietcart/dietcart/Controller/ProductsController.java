@@ -47,6 +47,15 @@ public class ProductsController {
         return ResponseEntity.ok(filteredProducts);
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<ProductDTO>> searchProducts(
+            @RequestParam String query,
+            @RequestParam(defaultValue = "10") int limit) {
+
+        List<ProductDTO> results = productService.searchProducts(query, limit);
+        return ResponseEntity.ok(results);
+    }
+
     @PostMapping
     public ResponseEntity<ProductDTO> createProduct(@RequestBody ProductDTO productDTO) {
         ProductDTO createdProduct = productService.createProduct(productDTO);
