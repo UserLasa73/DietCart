@@ -12,4 +12,8 @@ public interface ProductsRepository extends JpaRepository<Products, Long> {
     @Query("SELECT DISTINCT p FROM Products p JOIN p.dietTypes d WHERE " +
             "(:dietTypeIds IS NULL OR d.id IN :dietTypeIds)")
     List<Products> findByDietTypes(@Param("dietTypeIds") List<Long> dietTypeIds);
+
+
+    List<Products> findByNameContainingIgnoreCase(String name);
+
 }

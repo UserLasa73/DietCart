@@ -108,12 +108,7 @@ public class ProductService {
     }
 
 
-    public List<ProductDTO> filterProducts(List<Long> dietTypeIds) {
-        // Convert empty list to null for the repository query
-        // List<Long> searchDietIds = (dietTypeIds == null || dietTypeIds.isEmpty()) 
-        //     ? null 
-        //     : dietTypeIds;
-        
+    public List<ProductDTO> filterProducts(List<Long> dietTypeIds) { 
         if (dietTypeIds == null || dietTypeIds.isEmpty()) {
         return new ArrayList<>(); // Or `Collections.emptyList();`
     }
@@ -124,6 +119,15 @@ public class ProductService {
         return filteredProducts.stream()
             .map(ProductDTO::new)
             .collect(Collectors.toList());
+    }
+
+
+    public List<ProductDTO> searchProducts(String query, int limit) {
+        return productsRepository.findByNameContainingIgnoreCase(query)
+                .stream()
+                .limit(limit)
+                .map(ProductDTO::new)
+                .collect(Collectors.toList());
     }
     
 }
