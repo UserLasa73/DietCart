@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import api from '../utils/api';
 import ProductCard from "../components/ProductCard";
 import { useLocation } from "react-router-dom";
+import SearchBar from "../components/SearchBar";
 
 interface Product {
   id: number;
@@ -42,6 +43,7 @@ export default function Shop() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showMealPlans, setShowMealPlans] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const mealPlans: MealPlan[] = [
     {
@@ -63,19 +65,27 @@ export default function Shop() {
 
   // Fetch products with filtering
   useEffect(() => {
+
     const fetchProducts = async () => {
       setIsLoading(true);
       setError(null);
 
       try {
-        const response = await api.get('/products/filter', {
-          params: {
-            dietTypeIds: selectedDietTypes.length > 0
-              ? selectedDietTypes.join(',')
-              : undefined
-          }
-        });
-        console.log("fetched product is:",response.data);
+        let endpoint = '/products';
+        let params: any = {};
+
+        // Priority to search if it exists
+        if (searchQuery.trim()) {
+          endpoint = '/products/search';
+          params.query = searchQuery;
+        }
+        // If no search but diet filters exist
+        else if (selectedDietTypes.length > 0) {
+          endpoint = '/products/filter';
+          params.dietTypeIds = selectedDietTypes.join(',');
+        }
+
+        const response = await api.get(endpoint, { params });
         setProducts(response.data);
       } catch (err) {
         const errorMessage = err.response?.data?.message ||
@@ -89,8 +99,12 @@ export default function Shop() {
       }
     };
 
-    fetchProducts();
-  }, [selectedDietTypes]);
+    const debounceTimer = setTimeout(fetchProducts, 300);
+    return () => clearTimeout(debounceTimer);
+
+
+  }, [searchQuery, selectedDietTypes]);
+
 
   // Fetch diet types
   useEffect(() => {
@@ -118,82 +132,155 @@ export default function Shop() {
     }).filter(name => name !== '');
   };
 
+  const getEmptyStateMessage = () => {
+    if (searchQuery.trim()) {
+      return `No products found for "${searchQuery}"`;
+    } else if (selectedDietTypes.length > 0) {
+      const selectedNames = getSelectedDietNames().join(", ");
+      return `No products match the selected diet types: ${selectedNames}`;
+    }
+    return "No products available";
+  };
+
   return (
-    <div className="flex min-h-screen">
-      {/* Filter Sidebar */}
-      <div className="w-64 p-4 bg-gray-50">
-        <h3 className="text-lg font-bold mb-4">Select Your Diet</h3>
-        {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
-        <div className="space-y-2">
-          {dietTypes.map((dietType) => (
-            <div key={dietType.id} className="flex items-center">
-              <input
-                type="checkbox"
-                id={`diet-${dietType.id}`}
-                checked={selectedDietTypes.includes(dietType.id)}
-                onChange={() => handleDietTypeToggle(dietType.id)}
-                className="mr-2"
-                disabled={isLoading}
-              />
-              <label htmlFor={`diet-${dietType.id}`}>{dietType.name}</label>
-            </div>
-          ))}
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+          <h1 className="text-2xl font-bold text-gray-900">DietCart Shop</h1>
+          <div className="flex items-center gap-4 w-full sm:w-auto">
+            <SearchBar
+              onSearch={setSearchQuery}
+              placeholder="Search products..."
+              className="flex-1 sm:w-64"
+            />
+            <button
+              onClick={() => setShowMealPlans(!showMealPlans)}
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+              disabled={isLoading}
+            >
+              {showMealPlans ? "Show Products" : "Show Meal Plans"}
+            </button>
+          </div>
         </div>
-      </div>
+      </header>
 
-      {/* Main Content */}
-      <div className="flex-1 p-6">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold">
-            {showMealPlans ? "Meal Plans" : "Products List"}
-          </h2>
-          <button
-            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition disabled:opacity-50"
-            onClick={() => setShowMealPlans(!showMealPlans)}
-            disabled={isLoading}
-          >
-            {showMealPlans ? "Show Products" : "Show Meal Plans"}
-          </button>
-        </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Filter Sidebar - Modern Card Style */}
+          <div className="lg:w-64 flex-shrink-0">
+            <div className="bg-white p-4 rounded-lg shadow">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-medium text-gray-900">Diet Filters</h3>
+                {selectedDietTypes.length > 0 && (
+                  <button
+                    onClick={() => setSelectedDietTypes([])}
+                    className="text-sm text-green-600 hover:text-green-800"
+                  >
+                    Clear all
+                  </button>
+                )}
+              </div>
 
-        {/* Selected Filters Banner Header */}
-        {selectedDietTypes.length > 0 && !showMealPlans && (
-          <div className="bg-green-600 text-white p-4 mb-6">
-            <div className="container mx-auto">
-              <div className="flex flex-wrap gap-x-3 items-center">
-                {getSelectedDietNames().map((name, index) => (
-                  <span key={index} className="text-xl font-bold">
-                    {name}
-                    {index < selectedDietTypes.length - 1 && " / "}
-                  </span>
+              {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
+
+              <div className="space-y-3">
+                {dietTypes.map((dietType) => (
+                  <div key={dietType.id} className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id={`diet-${dietType.id}`}
+                      checked={selectedDietTypes.includes(dietType.id)}
+                      onChange={() => handleDietTypeToggle(dietType.id)}
+                      className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                      disabled={isLoading}
+                    />
+                    <label htmlFor={`diet-${dietType.id}`} className="ml-3 text-sm text-gray-700">
+                      {dietType.name}
+                    </label>
+                  </div>
                 ))}
               </div>
             </div>
           </div>
-        )}
 
-        {isLoading ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
-          </div>
-        ) : error ? (
-          <div className="text-red-500 text-center py-8">{error}</div>
-        ) : showMealPlans ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {mealPlans.map((plan) => (
-              <div key={plan.id} className="bg-white shadow-md p-4 border-l-4 border-green-600">
-                <h3 className="text-xl font-semibold mb-2">{plan.title}</h3>
-                <p className="text-gray-700">{plan.description}</p>
+          {/* Main Content Area */}
+          <div className="flex-1">
+            {/* Selected Filters */}
+            {selectedDietTypes.length > 0 && !showMealPlans && (
+              <div className="mb-6">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-sm font-medium text-gray-500">Selected:</span>
+                  {getSelectedDietNames().map((name, index) => (
+                    <span
+                      key={index}
+                      className="inline-flex items-center px-3 py-1 rounded-full bg-green-100 text-green-800 text-sm font-medium"
+                    >
+                      {name}
+                      <button
+                        onClick={() => handleDietTypeToggle(selectedDietTypes[index])}
+                        className="ml-1.5 inline-flex items-center justify-center w-4 h-4 rounded-full text-green-600 hover:bg-green-200"
+                      >
+                        &times;
+                      </button>
+                    </span>
+                  ))}
+                </div>
               </div>
-            ))}
+            )}
+
+            {/* Loading State */}
+            {isLoading ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {[...Array(8)].map((_, i) => (
+                  <div key={i} className="bg-white rounded-lg shadow-sm overflow-hidden animate-pulse">
+                    <div className="bg-gray-200 h-48 w-full"></div>
+                    <div className="p-4 space-y-3">
+                      <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                      <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                      <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : error ? (
+              <div className="bg-white p-6 rounded-lg shadow-sm text-center">
+                <div className="text-red-500 mb-4">{error}</div>
+                <button
+                  onClick={() => window.location.reload()}
+                  className="px-4 py-2 bg-gray-100 rounded-md hover:bg-gray-200 text-sm font-medium"
+                >
+                  Try Again
+                </button>
+              </div>
+            ) : showMealPlans ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {mealPlans.map((plan) => (
+                  <div key={plan.id} className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                    <div className="p-5">
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">{plan.title}</h3>
+                      <p className="text-gray-600 text-sm">{plan.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {products.map((product) => (
+                    <ProductCard key={product.id} product={product} />
+                  ))}
+                </div>
+                {/* Empty state */}
+                {products.length === 0 && !isLoading && !error && (
+                  <h3 className="mt-8 text-center text-lg font-medium text-gray-900">
+                    {getEmptyStateMessage()}
+                  </h3>
+                )}
+              </>
+            )}
           </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        )}
+        </div>
       </div>
     </div>
   );

@@ -13,7 +13,7 @@ interface Product {
 
 export default function ProductCard({ product }: { product: Product }) {
     return (
-        <div className="flex flex-col h-full overflow-hidden bg-white shadow-md hover:shadow-xl hover:ring-2 hover:ring-green-500 transition-all duration-300">
+        <div className="flex flex-col h-full overflow-hidden rounded-lg bg-white shadow-md hover:shadow-xl hover:ring-2 hover:ring-green-500 transition-all duration-300">
             <div className="aspect-[4/3] bg-gray-100 overflow-hidden">
                 <img
                     src={product.imageUrl || "/assets/images/product-placeholder.jpg"}
