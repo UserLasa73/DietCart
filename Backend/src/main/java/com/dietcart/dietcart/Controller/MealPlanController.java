@@ -28,7 +28,12 @@ public class MealPlanController {
     }
 
     @GetMapping
-    public ResponseEntity<List<MealPlans>> getAllMealPlans() {
+    public ResponseEntity<List<MealPlans>> getMealPlans(
+            @RequestParam(required = false) Long dietTypeId) {
+
+        if (dietTypeId != null) {
+            return ResponseEntity.ok(mealPlanService.findByDietTypeId(dietTypeId));
+        }
         return ResponseEntity.ok(mealPlanService.getAllMealPlans());
     }
 
