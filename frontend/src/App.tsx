@@ -47,6 +47,7 @@ export default function App() {
           <footer className="bg-gray-100 p-4 text-center text-gray-600">
             {new Date().getFullYear()} DietCart - All rights reserved
           </footer>
+          
         </div>
       </Router>
     </AuthProvider>

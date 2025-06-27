@@ -7,8 +7,14 @@ const api = axios.create({
 
 
 
+const PUBLIC_ROUTES = ['/auth/login'];
+
 api.interceptors.request.use(config => {
-  
+  const isPublicRoute = PUBLIC_ROUTES.some(route => config.url?.startsWith(route));
+  if (isPublicRoute) {
+    return config; // Skip auth
+  }
+
   const token = localStorage.getItem('token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -23,7 +29,7 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       // Handle token expiration or invalid token
       localStorage.removeItem('token');
-      window.location.href = '/login';
+      //window.location.href = '/login';
     }
     return Promise.reject(error);
   }
