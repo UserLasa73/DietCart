@@ -10,7 +10,7 @@ import com.dietcart.dietcart.model.MealPlans;
 
 public interface MealPlanRepository extends JpaRepository<MealPlans, Long> {
 
-    @Query("SELECT m FROM MealPlans m WHERE m.dietType.id = :dietTypeId")
+    @Query("SELECT mp FROM MealPlans mp WHERE mp.dietType.id = :dietTypeId")
     List<MealPlans> findByDietTypeId(@Param("dietTypeId") Long dietTypeId);
     
     // Basic search for admin panel
