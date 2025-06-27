@@ -131,11 +131,34 @@ export default function Shop() {
   }, [showMealPlans, selectedDietTypes]); // Only trigger on showMealPlans change
 
   const handleDietTypeToggle = (dietTypeId: number) => {
-    setSelectedDietTypes(prev =>
-      prev.includes(dietTypeId)
-        ? prev.filter(id => id !== dietTypeId)
-        : [...prev, dietTypeId]
-    );
+    if (showMealPlans) {
+      // For meal plans - allow only one selection
+      setSelectedDietTypes(prev => 
+        prev.includes(dietTypeId) 
+          ? [] // Deselect if clicking the same one
+          : [dietTypeId] // Always replace with single selection
+      );
+    } else {
+      // Original logic for products (multiple allowed)
+      setSelectedDietTypes(prev =>
+        prev.includes(dietTypeId)
+          ? prev.filter(id => id !== dietTypeId)
+          : [...prev, dietTypeId]
+      );
+    }
+  };
+
+  const toggleView = () => {
+    // When switching TO meal plans
+    if (!showMealPlans && selectedDietTypes.length > 1) {
+      setSelectedDietTypes([]);
+    }
+    // When switching TO products
+    else if (showMealPlans && selectedDietTypes.length === 1) {
+      setSelectedDietTypes([]);
+    }
+    
+    setShowMealPlans(!showMealPlans);
   };
 
   // Helper function to get selected diet type names for Topic Section
@@ -176,7 +199,7 @@ export default function Shop() {
               className="flex-1 sm:w-64"
             />
             <button
-              onClick={() => setShowMealPlans(!showMealPlans)}
+              onClick={toggleView}
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
               disabled={isLoading}
             >
