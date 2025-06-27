@@ -61,11 +61,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/auth/me").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/meal-plans").permitAll()
+                        //.requestMatchers("/api/meal-plans").authenticated()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/diet-types").permitAll() // displaying home page diet
-                        // .requestMatchers(HttpMethod.POST, "/api/diet-types").hasRole("ADMIN") // Protected writes
-                        // .requestMatchers(HttpMethod.PUT, "/api/diet-types/**").hasRole("ADMIN")
-                        // .requestMatchers(HttpMethod.DELETE, "/api/diet-types/**").hasRole("ADMIN")
+
                         .requestMatchers("/uploads/images/**").permitAll()
                         .anyRequest().authenticated());
 
