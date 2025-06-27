@@ -3,6 +3,7 @@ import api from '../utils/api';
 import ProductCard from "../components/ProductCard";
 import { useLocation } from "react-router-dom";
 import SearchBar from "../components/SearchBar";
+import MealPlanCard from "../components/MealPlanCard";
 
 interface Product {
   id: number;
@@ -17,8 +18,11 @@ interface Product {
 
 interface MealPlan {
   id: number;
-  title: string;
+  name: string;
   description: string;
+  items: string[];
+  dietTypeId: number;
+  createdAt: string;
 }
 
 interface DietType {
@@ -44,24 +48,7 @@ export default function Shop() {
   const [error, setError] = useState<string | null>(null);
   const [showMealPlans, setShowMealPlans] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-
-  const mealPlans: MealPlan[] = [
-    {
-      id: 1,
-      title: "Diabetic Control Plan 01",
-      description: "A 7-day low sugar meal plan designed for stable blood glucose.",
-    },
-    {
-      id: 2,
-      title: "Diabetic Control Plan 02",
-      description: "Rich in omega-3s and low in saturated fats for a healthy heart.",
-    },
-    {
-      id: 3,
-      title: "Diabetic Control Plan 03",
-      description: "Anti-inflammatory meals focused on hormone regulation.",
-    },
-  ];
+  const [mealPlans, setMealPlans] = useState<MealPlan[]>([]);
 
   // Fetch products with filtering
   useEffect(() => {
@@ -116,6 +103,30 @@ export default function Shop() {
       });
   }, []);
 
+
+  useEffect(() => {
+    if (showMealPlans) {
+      const fetchMealPlans = async () => {
+        setIsLoading(true);
+        setError(null);
+        try {
+          const response = await api.get('/meal-plans'); // Fetch all
+          setMealPlans(response.data);
+        } catch (err) {
+          const errorMessage = err.response?.data?.message ||
+            err.message ||
+            'Failed to load meal plans';
+          setError(errorMessage);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      fetchMealPlans();
+    } else {
+      setMealPlans([]); // Clear when toggling back to products
+    }
+  }, [showMealPlans]); // Only trigger on showMealPlans change
+
   const handleDietTypeToggle = (dietTypeId: number) => {
     setSelectedDietTypes(prev =>
       prev.includes(dietTypeId)
@@ -133,6 +144,9 @@ export default function Shop() {
   };
 
   const getEmptyStateMessage = () => {
+    if (showMealPlans) {
+      return "No meal plans available";
+    }
     if (searchQuery.trim()) {
       return `No products found for "${searchQuery}"`;
     } else if (selectedDietTypes.length > 0) {
@@ -253,17 +267,22 @@ export default function Shop() {
                   Try Again
                 </button>
               </div>
+
+              //Meal Plans Displaying
             ) : showMealPlans ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {mealPlans.map((plan) => (
-                  <div key={plan.id} className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-                    <div className="p-5">
-                      <h3 className="text-lg font-medium text-gray-900 mb-2">{plan.title}</h3>
-                      <p className="text-gray-600 text-sm">{plan.description}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {mealPlans.map((plan) => (
+                    <MealPlanCard key={plan.id} plan={plan} dietTypes={dietTypes} />
+                  ))}
+                </div>
+
+                {mealPlans.length === 0 && selectedDietTypes.length > 0 && !isLoading && !error && (
+                  <h3 className="mb-4 p-4 bg-yellow-50 text-yellow-800 rounded-lg">
+                    {getEmptyStateMessage()}
+                  </h3>
+                )}
+              </>
             ) : (
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -273,7 +292,7 @@ export default function Shop() {
                 </div>
                 {/* Empty state */}
                 {products.length === 0 && !isLoading && !error && (
-                  <h3 className="mt-8 text-center text-lg font-medium text-gray-900">
+                  <h3 className="mb-4 p-4 bg-yellow-50 text-yellow-800 rounded-lg">
                     {getEmptyStateMessage()}
                   </h3>
                 )}
