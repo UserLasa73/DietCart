@@ -13,6 +13,8 @@ import AdminRoute from './components/AdminRoute';
 import { AuthProvider } from './contexts/AuthContext';
 import AuthRoute from './components/AuthRoute';
 import Profile from './pages/Profile';
+import CreateMealPlan from './pages/CreateMealPlan';
+import EditMealPlan from './pages/EditMealPlans';
 
 
 export default function App() {
@@ -40,6 +42,8 @@ export default function App() {
                 <Route path="/admin/products/edit/:id" element={<EditProduct />} />
                 <Route path="/admin/diet-types/create" element={<CreateDietType />} />
                 <Route path="/admin/diet-types/edit/:id" element={<EditDietType />} />
+                <Route path="/admin/meal-plans/create" element={<CreateMealPlan />} />
+                <Route path="/admin/meal-plans/edit/:id" element={<EditMealPlan />} />
               </Route>
             </Routes>
           </main>
@@ -47,7 +51,7 @@ export default function App() {
           <footer className="bg-gray-100 p-4 text-center text-gray-600">
             {new Date().getFullYear()} DietCart - All rights reserved
           </footer>
-          
+
         </div>
       </Router>
     </AuthProvider>
