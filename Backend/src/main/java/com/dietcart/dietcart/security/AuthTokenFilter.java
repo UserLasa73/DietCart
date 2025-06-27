@@ -28,12 +28,6 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
 
-        // Skip JWT check for public GET endpoints
-        if (request.getRequestURI().startsWith("/api/meal-plans") &&
-                "GET".equalsIgnoreCase(request.getMethod())) {
-            filterChain.doFilter(request, response);
-            return;
-        }
         try {
             String jwt = parseJwt(request);
             if (jwt != null && jwtUtils.validateJwtToken(jwt)) {

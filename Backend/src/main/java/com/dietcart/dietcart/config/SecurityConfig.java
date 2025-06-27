@@ -61,8 +61,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/auth/me").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/api/meal-plans").permitAll()
-                        //.requestMatchers("/api/meal-plans").authenticated()
+                        .requestMatchers("/api/meal-plans").authenticated()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/diet-types").permitAll() // displaying home page diet
 
