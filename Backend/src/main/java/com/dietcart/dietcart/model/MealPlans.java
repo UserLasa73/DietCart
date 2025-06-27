@@ -16,6 +16,9 @@ public class MealPlans {
     @JoinColumn(name = "diet_type_id")
     private DietType dietType;
 
+    @Transient // Marks this as a non-persistent field
+private Long dietTypeId;
+
     private String name;
     private String description;
 
@@ -53,8 +56,22 @@ public class MealPlans {
     public void setItems(List<String> items) { this.items = items; }
     public LocalDateTime getCreatedAt() { return createdAt; }
 
-    // Convenience method to get diet type ID
+    // // Convenience method to get diet type ID
+    // public Long getDietTypeId() {
+    //     return this.dietType != null ? this.dietType.getId() : null;
+    // }
+
     public Long getDietTypeId() {
-        return this.dietType != null ? this.dietType.getId() : null;
+        return this.dietType != null ? this.dietType.getId() : this.dietTypeId;
+    }
+
+    public void setDietTypeId(Long dietTypeId) {
+        this.dietTypeId = dietTypeId;
+        if (dietTypeId != null) {
+            this.dietType = new DietType(); // Proxy
+            this.dietType.setId(dietTypeId);
+        } else {
+            this.dietType = null;
+        }
     }
 }
