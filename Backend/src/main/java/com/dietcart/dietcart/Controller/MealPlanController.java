@@ -11,11 +11,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dietcart.dietcart.Service.MealPlanService;
 import com.dietcart.dietcart.model.MealPlans;
-
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
@@ -32,23 +32,40 @@ public class MealPlanController {
         return ResponseEntity.ok(mealPlanService.getAllMealPlans());
     }
 
-    @GetMapping("/by-diet-type/{dietTypeId}")
-    public ResponseEntity<List<MealPlans>> getByDietType(@PathVariable Long dietTypeId) {
-        return ResponseEntity.ok(mealPlanService.getMealPlansByDietType(dietTypeId));
+    @GetMapping("/search")
+    public ResponseEntity<List<MealPlans>> searchMealPlans(@RequestParam String query) {
+        return ResponseEntity.ok(mealPlanService.searchMealPlans(query));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<MealPlans> getMealPlanById(@PathVariable Long id) {
+        MealPlans mealPlan = mealPlanService.getMealPlanById(id);
+        return ResponseEntity.ok(mealPlan);
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<List<MealPlans>> filterMealPlans(
+            @RequestParam(required = false) Long dietTypeId,
+            @RequestParam(required = false) String name) {
+
+        if (dietTypeId != null) {
+            return ResponseEntity.ok(mealPlanService.findByDietTypeId(dietTypeId));
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @PostMapping
-    public ResponseEntity<MealPlans> create(@RequestBody MealPlans mealPlan) {
-        return ResponseEntity.ok(mealPlanService.createMealPlan(mealPlan));
+    public ResponseEntity<MealPlans> createMealPlan(@RequestBody MealPlans request) {
+        // Spring will now properly bind dietTypeId from JSON
+        return ResponseEntity.ok(mealPlanService.createMealPlan(request));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<MealPlans> updateMealPlan(
             @PathVariable Long id,
-            @RequestBody MealPlans mealPlanDetails) {
-
-        MealPlans updatedMealPlan = mealPlanService.updateMealPlan(id, mealPlanDetails);
-        return ResponseEntity.ok(updatedMealPlan);
+            @RequestBody MealPlans request) {
+        return ResponseEntity.ok(mealPlanService.updateMealPlan(id, request));
     }
 
     @DeleteMapping("/{id}")
