@@ -6,12 +6,14 @@ import { useNavigate } from 'react-router-dom';
 export default function AdminDashboard() {
   const [products, setProducts] = useState([]);
   const [dietTypes, setDietTypes] = useState([]);
-  const [activeTab, setActiveTab] = useState<"products" | "dietTypes">("products");
+  const [mealPlans, setMealPlans] = useState([]);
+  const [activeTab, setActiveTab] = useState<"products" | "dietTypes" | "mealPlans">("products");
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState({
     products: true,
-    dietTypes: true
+    dietTypes: true,
+    mealPlans: true,
   });
 
   useEffect(() => {
@@ -36,6 +38,13 @@ export default function AdminDashboard() {
         console.error(err);
         setLoading(prev => ({ ...prev, dietTypes: false }));
       });
+
+    api.get("/meal-plans")
+      .then(res => {
+        setMealPlans(res.data);
+        setLoading(prev => ({ ...prev, mealPlans: false }));
+      })
+
   }, []);
 
   const handleDeleteProduct = (id: number) => {
@@ -54,6 +63,16 @@ export default function AdminDashboard() {
       api.delete(`/diet-types/${id}`)
         .then(() => {
           setDietTypes(prev => prev.filter(diet => diet.id !== id));
+        })
+        .catch(err => console.error(err));
+    }
+  };
+
+  const handleDeleteMealPlan = (id: number) => {
+    if (window.confirm('Delete this meal plan?')) {
+      api.delete(`/meal-plans/${id}`)
+        .then(() => {
+          setMealPlans(prev => prev.filter(plan => plan.id !== id));
         })
         .catch(err => console.error(err));
     }
@@ -79,6 +98,13 @@ export default function AdminDashboard() {
         >
           Diet Types
         </button>
+        <button
+          onClick={() => setActiveTab("mealPlans")}
+          className={`px-4 py-2 font-semibold ${activeTab === "mealPlans" ? "bg-green-600 text-white" : "bg-green-200 text-green-800"}`}
+        >
+          Meal Plans
+        </button>
+
       </div>
 
       {/* Product Management Tab */}
@@ -184,6 +210,55 @@ export default function AdminDashboard() {
         </div>
 
       )}
+
+
+      {/* Meal Plans Tab */}
+      {activeTab === "mealPlans" && (
+        <div>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-semibold">Manage Meal Plans</h2>
+            <button
+              onClick={() => navigate('/admin/meal-plans/create')}
+              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+            >
+              + Add Meal Plan
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {mealPlans.map((plan: any) => (
+              <div key={plan.id} className="bg-white p-4 rounded shadow border">
+                <h3 className="text-lg font-bold">{plan.name}</h3>
+                <p className="text-sm text-gray-600 mt-1">{plan.description}</p>
+                <div className="mt-2">
+                  <h4 className="text-sm font-medium">Includes:</h4>
+                  <ul className="list-disc list-inside text-xs">
+                    {plan.items.map((item: string, i: number) => (
+                      <li key={i}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="flex justify-end gap-2 mt-4">
+                  <button
+                    onClick={() => navigate(`/admin/meal-plans/edit/${plan.id}`)}
+                    className="text-blue-600 hover:underline text-sm"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDeleteMealPlan(plan.id)}
+                    className="text-red-600 hover:underline text-sm"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+
     </div>
   );
 }
