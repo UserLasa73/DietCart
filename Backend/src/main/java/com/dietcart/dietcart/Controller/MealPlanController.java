@@ -48,17 +48,6 @@ public class MealPlanController {
         return ResponseEntity.ok(mealPlan);
     }
 
-    @GetMapping("/filter")
-    public ResponseEntity<List<MealPlans>> filterMealPlans(
-            @RequestParam(required = false) Long dietTypeId,
-            @RequestParam(required = false) String name) {
-
-        if (dietTypeId != null) {
-            return ResponseEntity.ok(mealPlanService.findByDietTypeId(dietTypeId));
-        } else {
-            return ResponseEntity.badRequest().build();
-        }
-    }
 
     @PostMapping
     public ResponseEntity<MealPlans> createMealPlan(@RequestBody MealPlans request) {
