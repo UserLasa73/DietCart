@@ -110,7 +110,10 @@ export default function Shop() {
         setIsLoading(true);
         setError(null);
         try {
-          const response = await api.get('/meal-plans'); // Fetch all
+          const params = selectedDietTypes.length > 0 
+          ? { dietTypeId: selectedDietTypes.join(',') }
+          : {};
+          const response = await api.get('/meal-plans', { params }); // Fetch all
           setMealPlans(response.data);
         } catch (err) {
           const errorMessage = err.response?.data?.message ||
@@ -125,7 +128,7 @@ export default function Shop() {
     } else {
       setMealPlans([]); // Clear when toggling back to products
     }
-  }, [showMealPlans]); // Only trigger on showMealPlans change
+  }, [showMealPlans, selectedDietTypes]); // Only trigger on showMealPlans change
 
   const handleDietTypeToggle = (dietTypeId: number) => {
     setSelectedDietTypes(prev =>
@@ -145,6 +148,10 @@ export default function Shop() {
 
   const getEmptyStateMessage = () => {
     if (showMealPlans) {
+      if (selectedDietTypes.length > 0) {
+        const selectedNames = getSelectedDietNames().join(", ");
+        return `No meal plans match the selected diet types: ${selectedNames}`;
+      }
       return "No meal plans available";
     }
     if (searchQuery.trim()) {
