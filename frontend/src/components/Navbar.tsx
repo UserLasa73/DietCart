@@ -6,12 +6,10 @@ import {
   UserCircleIcon,
 } from '@heroicons/react/24/outline';
 import { useAuth } from '../contexts/AuthContext';
-import { useState } from 'react';
 
 export default function Navbar() {
   const cartItemCount = 0; // Replace with real state later
-  const { user, isAdmin, logout } = useAuth();
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const {isAdmin } = useAuth();
 
   return (
     <nav className="bg-white shadow-md sticky top-0 z-50">
@@ -73,49 +71,14 @@ export default function Navbar() {
             )}
           </Link>
 
-          {/* User Dropdown */}
-          <div className="relative">
-            <button
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="flex items-center space-x-1 focus:outline-none"
-            >
-              <UserCircleIcon className="h-6 w-6 text-gray-600 hover:text-green-600" />
-            </button>
+          {/* Profile*/}
+          <Link to="/Profile" className="relative" aria-label="Profile">
+            <UserCircleIcon className="h-6 w-6 text-gray-600 hover:text-green-600" />
+          </Link>
 
-            {/* Dropdown Menu */}
-            {isDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
-                <Link
-                  to="/Profile"
-                  className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                  onClick={() => setIsDropdownOpen(false)}
-                >
-                  My Account
-                </Link>
-                {user && (
-                  <button
-                    onClick={() => {
-                      logout();
-                      setIsDropdownOpen(false);
-                    }}
-                    className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
-                  >
-                    Log out
-                  </button>
-                )}
-              </div>
-            )}
-          </div>
         </div>
       </div>
 
-      {/* Close dropdown when clicking outside */}
-      {isDropdownOpen && (
-        <div
-          className="fixed inset-0 z-40"
-          onClick={() => setIsDropdownOpen(false)}
-        />
-      )}
     </nav>
   );
 }

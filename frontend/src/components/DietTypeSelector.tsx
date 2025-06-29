@@ -44,14 +44,12 @@ export default function DietTypeSelector() {
   };
 
   return (
-    <div className="p-6 min-h-screen bg-gradient-to-br from-gray-900 via-green-900 to-black text-white">
+    <div className="p-16 min-h-screen text-black">
       <div className="text-center mb-12">
-        <h2 className="text-4xl font-bold mb-4 tracking-tight text-green-300">
+        <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
           Select Your Dietary Preferences
         </h2>
-        <p className="text-lg text-green-100 max-w-2xl mx-auto">
-          Choose the diet types that match your needs. Selected options will filter products in the shop.
-        </p>
+        <div className="w-20 h-1 bg-green-500 mx-auto"></div>
       </div>
 
       {/* Card stack container */}
@@ -66,7 +64,7 @@ export default function DietTypeSelector() {
         </button>
 
         {/* Cards */}
-        <div className="relative h-[420px] w-[320px] perspective">
+        <div className="relative h-[350px] w-[250px] perspective">
           {dietTypes.map((diet, index) => {
             const offset = index - currentIndex;
             const isActive = index === currentIndex;

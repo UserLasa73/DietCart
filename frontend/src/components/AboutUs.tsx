@@ -33,7 +33,7 @@ import {
             {/* Text Column */}
             <div className="lg:w-1/2">
               <h3 className="text-2xl font-semibold text-gray-800 mb-4">
-                Nourishing Lives Since 2015
+                Nourishing Lives Since 2025
               </h3>
               <p className="text-gray-600 mb-6">
                 At DietCart, we believe healthy eating should be delicious, convenient, and 
